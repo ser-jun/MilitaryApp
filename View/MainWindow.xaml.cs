@@ -8,6 +8,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MilitaryApp.Data;
+using MilitaryApp.Data.Repositories;
+using MilitaryApp.Models;
+using MilitaryApp.ViewModel;
 
 namespace MilitaryApp
 {
@@ -19,6 +23,12 @@ namespace MilitaryApp
         public MainWindow()
         {
             InitializeComponent();
+            var context = new MilitaryDbContext();
+            var armyRepository = new MilitaryStructureRepository<Army>(context);
+
+            var viewModel = new MilitaryStructureViewModel(armyRepository);
+            this.DataContext = viewModel;
+            viewModel.LoadData();
         }
     }
 }

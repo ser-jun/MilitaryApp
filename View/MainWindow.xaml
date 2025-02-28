@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <DataGrid ItemsSource="{Binding Armies}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single" AutoGenerateColumns="true" Margin="0,0,347,0" />
+        <TextBox Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="564,95,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Margin="603,149,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Margin="663,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Command="{Binding AddItemCommand}" Content="Button" HorizontalAlignment="Left" Margin="593,271,0,0" VerticalAlignment="Top"/>
+        <Button Command="{Binding RemoveItemCommand}"  Content="Button" HorizontalAlignment="Left" Margin="696,275,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

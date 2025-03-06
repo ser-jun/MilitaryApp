@@ -11,7 +11,7 @@ namespace MilitaryApp.Data.Repositories
 {
     public class BaseCrudAbstract <T> : ICrudRepository<T> where T : class
     {
-        private readonly MilitaryDbContext _context;
+        protected readonly MilitaryDbContext _context;
         private readonly DbSet<T> _dbSet;
 
         public BaseCrudAbstract(MilitaryDbContext context)
@@ -47,13 +47,11 @@ namespace MilitaryApp.Data.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
-        public async Task DeleteAsync(int id) //Поменять метод ему как юы нету смысла искать по ID если можно передать сразу объект 
+        public async Task DeleteAsync(T entity)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity != null)
-            {
+           
                 _dbSet.Remove(entity);
-            }
+            
             await _context.SaveChangesAsync();
         }
     }

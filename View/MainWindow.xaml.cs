@@ -12,6 +12,7 @@ using MilitaryApp.Data;
 using MilitaryApp.Data.Repositories;
 using MilitaryApp.Models;
 using MilitaryApp.ViewModel;
+using MilitaryApp.DTO;
 
 namespace MilitaryApp
 {
@@ -29,6 +30,7 @@ namespace MilitaryApp
             var viewModel = new MilitaryStructureViewModel(armyRepository);
             this.DataContext = viewModel;
             viewModel.LoadData();
+        
         }
     }
 }

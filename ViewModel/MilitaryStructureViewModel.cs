@@ -1,4 +1,5 @@
 ﻿using MilitaryApp.Data.Repositories;
+using MilitaryApp.DTO;
 using MilitaryApp.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,18 +10,21 @@ namespace MilitaryApp.ViewModel
     {
         public ICommand AddItemCommand { get; }
         public ICommand RemoveItemCommand { get; }
+        public ICommand UpdateItemCommand { get; }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private string _name;
         private Army _selectedArmy;
         private ObservableCollection<Army> _armies;
         private MilitaryStructureRepository<Army> _armyRepository;
+       
 
         public MilitaryStructureViewModel(MilitaryStructureRepository<Army> armyRepository)
         {
             _armyRepository = armyRepository;
-            AddItemCommand = new RelayCommand(async () =>  AddData());
-           RemoveItemCommand = new RelayCommand(async ()=> DeleteData());
+            AddItemCommand = new RelayCommand(async () => AddData());
+            RemoveItemCommand = new RelayCommand(async () => DeleteData());
+            UpdateItemCommand = new RelayCommand(async () => UpdateData());
         }
         public ObservableCollection<Army> Armies
         {
@@ -59,18 +63,25 @@ namespace MilitaryApp.ViewModel
         }
         public async void AddData()
         {
-           var army = new Army { Name = _name };    
+            var army = new Army { Name = _name };
             await _armyRepository.AddAsync(army);
             Armies.Add(army);
             ((RelayCommand)AddItemCommand).RaiseCanExecuteChanged();
         }
         public async void DeleteData()
         {
-            int id = SelectedItem.ArmyId;
-            await _armyRepository.DeleteAsync(id);
+            await _armyRepository.DeleteAsync(SelectedItem);
             Armies.Remove(SelectedItem);
         }
+        public async void UpdateData()
+        {
+
+            SelectedItem.Name = NewItemName;
+            await _armyRepository.UpdateAsync(SelectedItem);
+            await LoadData();
+        }
         #endregion
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

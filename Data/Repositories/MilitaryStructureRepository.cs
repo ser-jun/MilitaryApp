@@ -7,14 +7,20 @@ using Microsoft.EntityFrameworkCore;
 using MilitaryApp.Data;
 using MilitaryApp.Data.Repositories;
 using MilitaryApp.Models;
+using MilitaryApp.DTO;
 
 namespace MilitaryApp.Data.Repositories
 {
-    public class MilitaryStructureRepository<T> :BaseCrudAbstract<T> where T : class
+    public class MilitaryStructureRepository<T> : BaseCrudAbstract<T> where T : class
     {
-        public MilitaryStructureRepository(MilitaryDbContext context) : base(context) 
+       
+        public MilitaryStructureRepository(MilitaryDbContext context) : base(context)
         { 
         }
        
+        public async Task<List<MilitaryStructureItem>> GetMilitaryStructure()
+        {
+            return await _context.Set<MilitaryStructureItem>().FromSqlRaw("CALL GetMilitaryStructure()").ToListAsync();
+        }
     }
 }

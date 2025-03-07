@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using MilitaryApp.DTO;
 using MilitaryApp.Models;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
@@ -16,7 +17,7 @@ public partial class MilitaryDbContext : DbContext
         : base(options)
     {
     }
-
+ 
     public virtual DbSet<Army> Armies { get; set; }
 
     public virtual DbSet<Combatequipment> Combatequipments { get; set; }

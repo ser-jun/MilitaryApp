@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MilitaryApp.DTO;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -49,10 +50,10 @@ namespace MilitaryApp.Data.Repositories
         }
         public async Task DeleteAsync(T entity)
         {
-           
-                _dbSet.Remove(entity);
-            
+            _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

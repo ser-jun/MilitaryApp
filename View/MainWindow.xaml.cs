@@ -29,8 +29,8 @@ namespace MilitaryApp
 
             var viewModel = new MilitaryStructureViewModel(armyRepository);
             this.DataContext = viewModel;
-            viewModel.LoadData();
-        
+            //viewModel.LoadData();
+      
         }
     }
 }

@@ -24,15 +24,15 @@ namespace MilitaryApp.Data.Repositories
              .SqlQueryRaw<MilitaryStructureItem>("CALL GetMilitaryStructure()")
              .ToListAsync();
         }
-        public async Task DeleteArmyByIdAsync(int armyId)
-        {
-            var army = await _context.Set<Army>().FindAsync(armyId);
-            if (army != null)
-            {
-                _context.Set<Army>().Remove(army);
-                await _context.SaveChangesAsync();
-            }
-        }
+        //public async Task DeleteArmyByIdAsync(int armyId)
+        //{
+        //    var army = await _context.Set<Army>().FindAsync(armyId);
+        //    if (army != null)
+        //    {
+        //        _context.Set<Army>().Remove(army);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
 
     }
 }

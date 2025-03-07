@@ -26,11 +26,16 @@ namespace MilitaryApp
             InitializeComponent();
             var context = new MilitaryDbContext();
             var armyRepository = new MilitaryStructureRepository<Army>(context);
+            var divisionRepository = new MilitaryStructureRepository<Division>(context);
+            var corpsRepository = new MilitaryStructureRepository<Corps>(context);
+            var militaryUnitRepository = new MilitaryStructureRepository<Militaryunit>(context);
 
-            var viewModel = new MilitaryStructureViewModel(armyRepository);
+            var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository);
             this.DataContext = viewModel;
             //viewModel.LoadData();
       
         }
+        
+        
     }
 }

@@ -3,55 +3,88 @@ using MilitaryApp.DTO;
 using MilitaryApp.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
+
 namespace MilitaryApp.ViewModel
 {
     public class MilitaryStructureViewModel : INotifyPropertyChanged
     {
         public ICommand AddItemCommand { get; }
-        public ICommand RemoveItemCommand { get; }
-        public ICommand UpdateItemCommand { get; }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private string _name;
-        private Army _selectedArmy;
-        private ObservableCollection<Army> _armies;
-        private ObservableCollection<MilitaryStructureItem> _militaryStructureItems; 
-        private MilitaryStructureRepository<Army> _armyRepository;
-       
+        private string _selectedStructureType;
+        private MilitaryStructureItem _selectedParentItem;
 
-        public MilitaryStructureViewModel(MilitaryStructureRepository<Army> armyRepository)
+        private ObservableCollection<MilitaryStructureItem> _militaryStructureItems;
+        private ObservableCollection<MilitaryStructureItem> _parentItems;
+        private ObservableCollection<string> _structureTypes;
+
+        private readonly MilitaryStructureRepository<Army> _armyRepository;
+        private readonly MilitaryStructureRepository<Division> _divisionRepository;
+        private readonly MilitaryStructureRepository<Corps> _corpsRepository;
+        private readonly MilitaryStructureRepository<Militaryunit> _militaryUnitRepository;
+
+        public MilitaryStructureViewModel(
+            MilitaryStructureRepository<Army> armyRepository,
+            MilitaryStructureRepository<Division> divisionRepository,
+            MilitaryStructureRepository<Corps> corpsRepository,
+            MilitaryStructureRepository<Militaryunit> militaryUnitRepository)
         {
             _armyRepository = armyRepository;
-            AddItemCommand = new RelayCommand(async () => AddData());
-            RemoveItemCommand = new RelayCommand(async () => DeleteData());
-            UpdateItemCommand = new RelayCommand(async () => UpdateData());
+            _divisionRepository = divisionRepository;
+            _corpsRepository = corpsRepository;
+            _militaryUnitRepository = militaryUnitRepository;
+
+            AddItemCommand = new RelayCommand(async () => await AddItem());
+
+            StructureTypes = new ObservableCollection<string>
+            {
+                "Армия", "Дивизия", "Корпус", "Военная часть"
+            };
+
+            ParentItems = new ObservableCollection<MilitaryStructureItem>();
+
             LoadMilitaryStructureItems().ConfigureAwait(false);
         }
-        public ObservableCollection<Army> Armies
-        {
-            get { return _armies; }
-            set
-            {
-                _armies = value;
-                OnPropertyChanged(nameof(Armies));
-            }
-        }
+
+        #region Properties
+
         public ObservableCollection<MilitaryStructureItem> MilitaryStructureItems
         {
-            get { return _militaryStructureItems; }
+            get => _militaryStructureItems;
             set
             {
                 _militaryStructureItems = value;
                 OnPropertyChanged(nameof(MilitaryStructureItems));
-                (RemoveItemCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                //(UpdateItemCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
         }
+
+        public ObservableCollection<string> StructureTypes
+        {
+            get => _structureTypes;
+            set
+            {
+                _structureTypes = value;
+                OnPropertyChanged(nameof(StructureTypes));
+            }
+        }
+
+        public ObservableCollection<MilitaryStructureItem> ParentItems
+        {
+            get => _parentItems;
+            set
+            {
+                _parentItems = value;
+                OnPropertyChanged(nameof(ParentItems));
+            }
+        }
+
         public string NewItemName
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 _name = value;
@@ -59,65 +92,125 @@ namespace MilitaryApp.ViewModel
             }
         }
 
-        public Army SelectedItem
+        public string SelectedStructureType
         {
-            get => _selectedArmy;
+            get => _selectedStructureType;
             set
             {
-                _selectedArmy = value;
-                OnPropertyChanged(nameof(SelectedItem));
+                _selectedStructureType = value;
+                OnPropertyChanged(nameof(SelectedStructureType));
+                UpdateParentItems();
             }
         }
 
-        #region CRUD operation 
+        public MilitaryStructureItem SelectedParentItem
+        {
+            get => _selectedParentItem;
+            set
+            {
+                _selectedParentItem = value;
+                OnPropertyChanged(nameof(SelectedParentItem));
+            }
+        }
+
+        #endregion
+
+        #region CRUD operations 
+
         public async Task LoadMilitaryStructureItems()
         {
-            try
+            var militaryStructureItems = await _armyRepository.GetMilitaryStructure();
+            MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(militaryStructureItems);
+        }
+        #region AddMethods
+        private async Task AddItem()
+        {
+            if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
             {
-                var militaryStructureItems = await _armyRepository.GetMilitaryStructure();
-                MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(militaryStructureItems);
-
-
-                if (MilitaryStructureItems.Count == 0)
-                {
-                    MessageBox.Show("Данные не найдены.");
-                }
+                return; 
             }
-            catch (Exception ex)
+
+            switch (SelectedStructureType)
             {
-                MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}");
+                case "Армия":
+                    await AddArmy();
+                    break;
+
+                case "Дивизия":
+                    if (SelectedParentItem?.ArmyId != null)
+                    {
+                        await AddDivision();
+                    }
+                    break;
+
+                case "Корпус":
+                    if (SelectedParentItem?.DivisionId != null)
+                    {
+                        await AddCorps();
+                    }
+                    break;
+
+                case "Военная часть":
+                    if (SelectedParentItem?.CorpsId != null)
+                    {
+                        await AddMilitaryUnit();    
+                    }
+                    break;
+            }
+
+            await LoadMilitaryStructureItems();
+        }
+        private async Task AddArmy()
+        {
+            await _armyRepository.AddAsync(new Army { Name = NewItemName });
+        }
+        private async Task AddDivision()
+        {
+            await _divisionRepository.AddAsync(new Division { Name = NewItemName, ArmyId = SelectedParentItem.ArmyId });
+        }
+        private async Task AddCorps ()
+        {
+            await _corpsRepository.AddAsync(new Corps { Name = NewItemName, DivisionId = SelectedParentItem.DivisionId.Value });
+        }
+        private async Task AddMilitaryUnit()
+        {
+            await _militaryUnitRepository.AddAsync(
+                new Militaryunit { Name = NewItemName, CorpsId = SelectedParentItem.CorpsId.Value });
+        }
+        #endregion
+        private void UpdateParentItems()
+        {
+            switch (SelectedStructureType)
+            {
+                case "Дивизия":
+                    ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                        MilitaryStructureItems.Where(x => x.ArmyId != null)
+                    );
+                    break;
+
+                case "Корпус":
+                    ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                        MilitaryStructureItems.Where(x => x.DivisionId != null)
+                    );
+                    break;
+
+                case "Военная часть":
+                    ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                        MilitaryStructureItems.Where(x => x.CorpsId != null)
+                    );
+                    break;
+
+                default:
+                    ParentItems = new ObservableCollection<MilitaryStructureItem>();
+                    break;
             }
         }
-        public async Task LoadData()
-        {
-            var armies = await _armyRepository.GetAllAsync();
-            Armies = new ObservableCollection<Army>(armies);
-        }
-        public async void AddData()
-        {
-            var army = new Army { Name = _name };
-            await _armyRepository.AddAsync(army);
-           await LoadMilitaryStructureItems();
-            ((RelayCommand)AddItemCommand).RaiseCanExecuteChanged();
-        }
-        public async void DeleteData()
-        {
-            await _armyRepository.DeleteArmyByIdAsync(SelectedItem.ArmyId);
-            Armies.Remove(SelectedItem);
-        }
-        public async void UpdateData()
-        {
 
-            SelectedItem.Name = NewItemName;
-            await _armyRepository.UpdateAsync(SelectedItem);
-            await LoadData();
-        }
         #endregion
 
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 }

@@ -18,10 +18,6 @@ namespace MilitaryApp.DTO
         public int? UnitId { get; set; }
         public string UnitName { get; set; } = null!;
 
-        public string ItemType =>
-       UnitId.HasValue ? "Unit" :
-       CorpsId.HasValue ? "Corps" :
-       DivisionId.HasValue ? "Division" :
-       "Army";
+    
     }
 }

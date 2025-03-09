@@ -4,24 +4,24 @@ using MilitaryApp.Models;
 using MilitaryApp.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 public class MilitaryStructureViewModel : INotifyPropertyChanged
 {
     public ICommand AddItemCommand { get; }
+    public ICommand DeleteItemCommand { get; }
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private string _name;
     private string _selectedStructureType;
     private MilitaryStructureItem _selectedParentItem;
+    private MilitaryStructureItem _selectedItem;
 
     private ObservableCollection<MilitaryStructureItem> _militaryStructureItems;
     private ObservableCollection<MilitaryStructureItem> _parentItems;
     private ObservableCollection<string> _structureTypes;
 
-    // Коллекции для каждой структуры
+
     private ObservableCollection<Army> _armies;
     private ObservableCollection<Division> _divisions;
     private ObservableCollection<Corps> _corps;
@@ -44,6 +44,7 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
         _militaryUnitRepository = militaryUnitRepository;
 
         AddItemCommand = new RelayCommand(async () => await AddItem());
+        DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
 
         StructureTypes = new ObservableCollection<string>
         {
@@ -117,129 +118,16 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(SelectedParentItem));
         }
     }
-
-    #endregion
-
-    #region CRUD operations
-
-    private async Task LoadMilitaryStructureItems()
+    public MilitaryStructureItem SelectedItem
     {
-        // Загружаем данные моделей через репозитории
-        //var armies = await _armyRepository.GetAllAsync();
-        //var divisions = await _divisionRepository.GetAllAsync();
-        //var corps = await _corpsRepository.GetAllAsync();
-        //var militaryUnits = await _militaryUnitRepository.GetAllAsync();
-
-        //Armies = new ObservableCollection<Army>(await _armyRepository.GetAllAsync());
-        //Divisions = new ObservableCollection<Division>(await _divisionRepository.GetAllAsync());
-        //Corps = new ObservableCollection<Corps>(await _corpsRepository.GetAllAsync());
-        //MilitaryUnits = new ObservableCollection<Militaryunit>(await _militaryUnitRepository.GetAllAsync());
-        //var militaryStructureItems = await _armyRepository.GetMilitaryStructure();
-        MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(await _armyRepository.GetMilitaryStructure());
-
-        UpdateParentItems();
-    }
-
-    #region AddMethods
-
-    private async Task AddItem()
-    {
-        if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
+        get => _selectedItem;
+        set
         {
-            return;
-        }
-
-        switch (SelectedStructureType)
-        {
-            case "Армия":
-                await AddArmy();
-                break;
-
-            case "Дивизия":
-                if (SelectedParentItem?.ArmyId != null)
-                {
-                    await AddDivision();
-                }
-                break;
-
-            case "Корпус":
-                if (SelectedParentItem?.DivisionId != null)
-                {
-                    await AddCorps();
-                }
-                break;
-
-            case "Военная часть":
-                if (SelectedParentItem?.CorpsId != null)
-                {
-                    await AddMilitaryUnit();
-                }
-                break;
-        }
-
-        await LoadMilitaryStructureItems();
-    }
-
-    private async Task AddArmy()
-    {
-        await _armyRepository.AddAsync(new Army { Name = NewItemName });
-    }
-
-    private async Task AddDivision()
-    {
-        await _divisionRepository.AddAsync(new Division { Name = NewItemName, ArmyId = SelectedParentItem.ArmyId.Value });
-    }
-
-    private async Task AddCorps()
-    {
-        await _corpsRepository.AddAsync(new Corps { Name = NewItemName, DivisionId = SelectedParentItem.DivisionId.Value });
-    }
-
-    private async Task AddMilitaryUnit()
-    {
-        await _militaryUnitRepository.AddAsync(
-            new Militaryunit { Name = NewItemName, CorpsId = SelectedParentItem.CorpsId.Value });
-    }
-
-    #endregion
-
-    private void UpdateParentItems()
-    {
-        switch (SelectedStructureType)
-        {
-            case "Дивизия":
-                // Используем уже загруженные коллекции армий
-                ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                    Armies.Select(a => new MilitaryStructureItem { ArmyId = a.ArmyId, ArmyName = a.Name }).ToList());
-                break;
-
-            case "Корпус":
-                // Используем уже загруженные коллекции дивизий
-                ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                    Divisions.Select(d => new MilitaryStructureItem { DivisionId = d.DivisionId, DivisionName = d.Name }).ToList());
-                break;
-
-            case "Военная часть":
-                // Используем уже загруженные коллекции корпусов
-                ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                    Corps.Select(c => new MilitaryStructureItem { CorpsId = c.CorpsId, CorpsName = c.Name }).ToList());
-                break;
-
-            default:
-                ParentItems = new ObservableCollection<MilitaryStructureItem>();
-                break;
+            _selectedItem = value;
+            OnPropertyChanged(nameof(SelectedItem));
         }
     }
-
-    #endregion
-
-    protected void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    #region Collections
-
+    #region Properties collection
     public ObservableCollection<Army> Armies
     {
         get => _armies;
@@ -281,4 +169,111 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
     }
 
     #endregion
+    #endregion
+
+
+    private async Task LoadMilitaryStructureItems()
+    {
+        Armies = new ObservableCollection<Army>(await _armyRepository.GetAllAsync());
+        Divisions = new ObservableCollection<Division>(await _divisionRepository.GetAllAsync());
+        Corps = new ObservableCollection<Corps>(await _corpsRepository.GetAllAsync());
+        MilitaryUnits = new ObservableCollection<Militaryunit>(await _militaryUnitRepository.GetAllAsync());
+        MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(await _armyRepository.GetMilitaryStructure());
+
+        UpdateParentItems();
+    }
+
+    private async Task DeleteItem()
+    {
+        if (SelectedItem == null)
+            return;
+
+        switch (SelectedStructureType)
+        {
+            case "Армия":
+                await _armyRepository.DeleteArmy(SelectedItem?.ArmyId.Value ?? 0);
+                break;
+            case "Дивизия":
+                await _divisionRepository.DeleteDivision(SelectedItem?.DivisionId.Value ?? 0);
+                break;
+            case "Корпус":
+                await _corpsRepository.DeleteCorps(SelectedItem?.CorpsId.Value ?? 0);
+                break;
+            case "Военная часть":
+                await _militaryUnitRepository.DeleteUnit(SelectedItem?.UnitId.Value ?? 0);
+                break;
+        }
+
+        await LoadMilitaryStructureItems();
+    }
+
+
+
+    private async Task AddItem()
+    {
+        if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
+        {
+            return;
+        }
+
+        switch (SelectedStructureType)
+        {
+            case "Армия":
+                await _armyRepository.AddArmy(NewItemName);
+                break;
+
+            case "Дивизия":
+                if (SelectedParentItem?.ArmyId != null)
+                {
+                    await _divisionRepository.AddDivision(NewItemName, SelectedParentItem.ArmyId.Value);
+                }
+                break;
+
+            case "Корпус":
+                if (SelectedParentItem?.DivisionId != null)
+                {
+                    await _corpsRepository.AddCorps(NewItemName, SelectedParentItem.DivisionId.Value);
+                }
+                break;
+
+            case "Военная часть":
+                if (SelectedParentItem?.CorpsId != null)
+                {
+                    await _militaryUnitRepository.AddMilitaryUnit(NewItemName, SelectedParentItem.CorpsId.Value);
+                }
+                break;
+        }
+
+        await LoadMilitaryStructureItems();
+    }
+    private void UpdateParentItems()
+    {
+        switch (SelectedStructureType)
+        {
+            case "Дивизия":
+                ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                    Armies.Select(a => new MilitaryStructureItem { ArmyId = a.ArmyId, ArmyName = a.Name }).ToList());
+                break;
+
+            case "Корпус":
+                ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                    Divisions.Select(d => new MilitaryStructureItem { DivisionId = d.DivisionId, DivisionName = d.Name }).ToList());
+                break;
+
+            case "Военная часть":
+                ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                    Corps.Select(c => new MilitaryStructureItem { CorpsId = c.CorpsId, CorpsName = c.Name }).ToList());
+                break;
+
+            default:
+                ParentItems = new ObservableCollection<MilitaryStructureItem>();
+                break;
+        }
+    }
+
+
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }

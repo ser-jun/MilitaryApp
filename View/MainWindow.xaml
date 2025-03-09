@@ -21,6 +21,8 @@
                   SelectionMode="Single"
                   Grid.Column="0">
             <DataGrid.Columns>
+                
+                <DataGridTextColumn Header="Id" Binding="{Binding ArmyId}" />
                 <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" />
                 <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
                 <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />

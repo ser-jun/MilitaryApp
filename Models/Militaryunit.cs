@@ -5,7 +5,7 @@ namespace MilitaryApp.Models;
 
 public partial class Militaryunit
 {
-    public int UnitId { get; set; }
+    public int? UnitId { get; set; }
 
     public string Name { get; set; } = null!;
 

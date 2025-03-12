@@ -10,6 +10,7 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
 {
     public ICommand AddItemCommand { get; }
     public ICommand DeleteItemCommand { get; }
+    public ICommand UpdateItemCommand { get; }  
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private string _name;
@@ -45,6 +46,7 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
 
         AddItemCommand = new RelayCommand(async () => await AddItem());
         DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
+        UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
 
         StructureTypes = new ObservableCollection<string>
         {
@@ -171,7 +173,7 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
     #endregion
     #endregion
 
-
+    #region CRUD operation
     private async Task LoadMilitaryStructureItems()
     {
         Armies = new ObservableCollection<Army>(await _armyRepository.GetAllAsync());
@@ -182,7 +184,6 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
 
         UpdateParentItems();
     }
-
     private async Task DeleteItem()
     {
         if (SelectedItem == null)
@@ -206,9 +207,6 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
 
         await LoadMilitaryStructureItems();
     }
-
-
-
     private async Task AddItem()
     {
         if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
@@ -246,6 +244,28 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
 
         await LoadMilitaryStructureItems();
     }
+    private async Task UpdateItem()
+    {
+        if (SelectedItem == null)
+            return;
+        switch  (SelectedStructureType)
+        {
+            case "Армия":
+                await _armyRepository.UpdateArmy(SelectedItem?.ArmyId.Value ?? 0, NewItemName);
+                break;
+            case "Дивизия":
+                await _divisionRepository.UpdateDivision(SelectedItem?.DivisionId.Value ?? 0, NewItemName, SelectedParentItem.ArmyId.Value);
+                break;
+            case "Корпус":
+                await _corpsRepository.UpdateCorps(SelectedItem?.CorpsId.Value ?? 0, NewItemName, SelectedParentItem.DivisionId.Value);
+                break;
+            case "Военная часть":
+                await _militaryUnitRepository.UpdateMilitaryUnit(SelectedItem?.UnitId.Value ?? 0, NewItemName, SelectedParentItem.CorpsId.Value);
+                break;
+        }
+       await LoadMilitaryStructureItems();
+    }
+    #endregion
     private void UpdateParentItems()
     {
         switch (SelectedStructureType)

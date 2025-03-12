@@ -32,7 +32,7 @@ namespace MilitaryApp
 
             var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository);
             this.DataContext = viewModel;
-            //viewModel.LoadData();
+
       
         }
         

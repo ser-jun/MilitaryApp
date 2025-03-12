@@ -19,10 +19,12 @@
                   ItemsSource="{Binding MilitaryStructureItems}" 
                   SelectedItem="{Binding SelectedItem}" 
                   SelectionMode="Single"
-                  Grid.Column="0">
+                  Grid.Column="0"
+                  CanUserReorderColumns="False"
+                  CanUserResizeColumns="False"
+                  IsReadOnly="True">
             <DataGrid.Columns>
-                
-                <DataGridTextColumn Header="Id" Binding="{Binding ArmyId}" />
+           
                 <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" />
                 <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
                 <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />
@@ -64,6 +66,7 @@
             </ComboBox>
             <Button Command="{Binding AddItemCommand}" Content="Добавить" Margin="0,10,0,0" Width="200"/>
             <Button Command="{Binding DeleteItemCommand}" Content="Удалить" Margin="0,10,0,0" Width="200" />
+            <Button Command="{Binding UpdateItemCommand}" Content="Изменить" Margin="0,10,0,0" Width="200" />
         </StackPanel>
     </Grid>
 </Window>

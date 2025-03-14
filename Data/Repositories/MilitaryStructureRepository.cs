@@ -7,12 +7,7 @@
 
     namespace MilitaryApp.Data.Repositories
     {
-        public class MilitaryStructureRepository :
-            IArmyRepository,
-            IDivisionRepository,
-            ICorpsRepository,
-            IMilitaryUnitRepository, 
-            IMilitaryStructureRepository
+        public class MilitaryStructureRepository : IArmyRepository, IDivisionRepository, ICorpsRepository, IMilitaryUnitRepository, IMilitaryStructureRepository
         
         {
             private readonly MilitaryDbContext _context;

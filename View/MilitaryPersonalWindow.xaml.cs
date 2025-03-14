@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MilitaryApp.Models;
 using MilitaryApp.Data.Repositories;
+using MilitaryApp.Data.Repositories.Interfaces;
 
 namespace MilitaryApp.View
 {
@@ -28,8 +29,11 @@ namespace MilitaryApp.View
         {
             InitializeComponent();
             var context = new MilitaryDbContext();
-            var militarySpeltiesRepository = new MilitaryPersonnelRepository<Militaryspecialty>(context);
-            DataContext = new MilitaryPersonalViewModel(militarySpeltiesRepository);
+            //var militarySpeltiesRepository = new MilitaryPersonnelRepository<Militaryspecialty>(context);
+            IMilitaryPersonnelRepository militarySpeltiesRepository = new MilitaryPersonnelRepository(context);
+            ICrudRepository<Militaryspecialty> crudRepository = new BaseCrudAbstract<Militaryspecialty>(context);
+            ICrudRepository<Militaryunit> militaryUnitRepository= new BaseCrudAbstract<Militaryunit>(context);
+            DataContext = new MilitaryPersonalViewModel(militarySpeltiesRepository, crudRepository, militaryUnitRepository);
         }
     }
 }

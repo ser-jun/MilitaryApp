@@ -3,6 +3,8 @@ using MilitaryApp.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using MilitaryApp.Data.Repositories;
+using MilitaryApp.Data.Repositories.Interfaces;
+using System.Windows;
 
 namespace MilitaryApp.ViewModel
 {
@@ -18,16 +20,25 @@ namespace MilitaryApp.ViewModel
 
         private ObservableCollection<MilitaryRank> _rankList;
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
+        private ObservableCollection<Militaryunit> _militaryUnits;
+
         private ObservableCollection<MilitaryPersonnelItem> _militaryPersonalItem;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private MilitaryPersonnelRepository<Militaryspecialty> _militarySpeltiesRepository;
+        private readonly IMilitaryPersonnelRepository _personnelRepository;
+        private readonly ICrudRepository<Militaryspecialty> _crudRepositoryMilitarySpelty;
+        private readonly ICrudRepository<Militaryunit> _crudRepositoryMilitaryUnit;
 
-        public MilitaryPersonalViewModel(MilitaryPersonnelRepository<Militaryspecialty> militarySpeltiesRepository)
+        public MilitaryPersonalViewModel(IMilitaryPersonnelRepository personnelrepository, ICrudRepository<Militaryspecialty> crudRepository, ICrudRepository<Militaryunit> crudRepositoryMilitaryUnit)
         {
-            _militarySpeltiesRepository = militarySpeltiesRepository;
+            _personnelRepository = personnelrepository;
+            _crudRepositoryMilitarySpelty = crudRepository;
+            _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
             InitializationRankList();
-            LoadMilitarySpetialties();
+            InitializationUnitList(); // разобраться с вызовом нужно сделать асинхронным вызов 
+            InitialisationMilitarySpetialties();
+            LoadMilitaryPersonnelItem();
+            _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
         }
         private void InitializationRankList()
         {
@@ -120,11 +131,32 @@ namespace MilitaryApp.ViewModel
             }
         }
 
+        public ObservableCollection<Militaryunit> MilitaryUnit
+        {
+            get => _militaryUnits;
+            set
+            {
+                _militaryUnits = value;
+                OnPropertyChanged(nameof(MilitaryUnit));
+            }
+        }
         #endregion
 
-        public async Task LoadMilitarySpetialties()
+        private async Task InitialisationMilitarySpetialties()
         {
-           MilitarySpecialties = new ObservableCollection<Militaryspecialty>(await _militarySpeltiesRepository.GetAllAsync());
+            MilitarySpecialties = new ObservableCollection<Militaryspecialty>(await _crudRepositoryMilitarySpelty.GetAllAsync());
+           SelectedSpecialties = MilitarySpecialties.First();
+        }
+        private async Task LoadMilitaryPersonnelItem()
+        {
+            MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(await _personnelRepository.GetMilitaryPersonnel());
+        }
+        private async Task InitializationUnitList()
+        {
+            MilitaryUnit = new ObservableCollection<Militaryunit>(await _crudRepositoryMilitaryUnit.GetAllAsync());
+            //var units = await _crudRepositoryMilitaryUnit.GetAllAsync();
+            //MessageBox.Show($"{units.Count()}");
+            //MilitaryUnit = new ObservableCollection<Militaryunit>(units);
         }
         protected void OnPropertyChanged(string propertyName)
         {

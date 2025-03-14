@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MilitaryApp.Data.Repositories
+namespace MilitaryApp.Data.Repositories.Interfaces
 {
-    public interface ICrudRepository<T> 
+    public interface ICrudRepository<T>
     {
         Task<T> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();

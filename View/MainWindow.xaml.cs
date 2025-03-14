@@ -1,18 +1,9 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using MilitaryApp.Data;
 using MilitaryApp.Data.Repositories;
+using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.Models;
 using MilitaryApp.ViewModel;
-using MilitaryApp.DTO;
 
 namespace MilitaryApp
 {
@@ -25,17 +16,15 @@ namespace MilitaryApp
         {
             InitializeComponent();
             var context = new MilitaryDbContext();
-            var armyRepository = new MilitaryStructureRepository<Army>(context);
-            var divisionRepository = new MilitaryStructureRepository<Division>(context);
-            var corpsRepository = new MilitaryStructureRepository<Corps>(context);
-            var militaryUnitRepository = new MilitaryStructureRepository<Militaryunit>(context);
 
-            var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository);
+            IArmyRepository armyRepository = new MilitaryStructureRepository(context);
+            IDivisionRepository divisionRepository = new MilitaryStructureRepository(context);
+            ICorpsRepository corpsRepository = new MilitaryStructureRepository(context);
+            IMilitaryUnitRepository militaryUnitRepository = new MilitaryStructureRepository(context);
+            IMilitaryStructureRepository militaryStructureRepository = new MilitaryStructureRepository(context);
+
+            var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository, militaryStructureRepository);
             this.DataContext = viewModel;
-
-      
         }
-        
-        
     }
 }

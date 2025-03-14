@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using MilitaryApp.DTO;
+using MilitaryApp.Data.Repositories.Interfaces;
 
 namespace MilitaryApp.Data.Repositories
 {

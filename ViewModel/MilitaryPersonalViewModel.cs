@@ -23,12 +23,10 @@ namespace MilitaryApp.ViewModel
 
         private MilitaryPersonnelRepository<Militaryspecialty> _militarySpeltiesRepository;
 
-        private ObservableCollection<Militaryspecialty> _militarySpecialty;
         public MilitaryPersonalViewModel(MilitaryPersonnelRepository<Militaryspecialty> militarySpeltiesRepository)
         {
             _militarySpeltiesRepository = militarySpeltiesRepository;
             InitializationRankList();
-         
             LoadMilitarySpetialties();
         }
         private void InitializationRankList()
@@ -121,16 +119,7 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedSpecialties));
             }
         }
-        //public ObservableCollection<Militaryspecialty> Spetialty
-        //{
-        //    get => _militarySpecialty;
-        //    set
-        //    {
-        //        _militarySpecialty = value;
-        //        OnPropertyChanged(nameof(Spetialty));
-        //    }
 
-        //}
         #endregion
 
         public async Task LoadMilitarySpetialties()

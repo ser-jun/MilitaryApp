@@ -5,12 +5,17 @@ using MilitaryApp.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using MilitaryApp.View;
+using MilitaryApp;
+using System.Windows;
 
 public class MilitaryStructureViewModel : INotifyPropertyChanged
 {
     public ICommand AddItemCommand { get; }
     public ICommand DeleteItemCommand { get; }
     public ICommand UpdateItemCommand { get; }  
+
+    public ICommand OpenPersonnelWindow { get; set; }   
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private string _name;
@@ -47,6 +52,7 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
         AddItemCommand = new RelayCommand(async () => await AddItem());
         DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
         UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
+        OpenPersonnelWindow = new RelayCommand(OpenWindow);
 
         StructureTypes = new ObservableCollection<string>
         {
@@ -291,7 +297,12 @@ public class MilitaryStructureViewModel : INotifyPropertyChanged
         }
     }
 
-
+    private void OpenWindow()
+    {
+        MilitaryPersonalWindow mpWindow = new MilitaryPersonalWindow();
+        Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
+        mpWindow.Show();
+    }
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

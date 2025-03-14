@@ -67,6 +67,7 @@
             <Button Command="{Binding AddItemCommand}" Content="Добавить" Margin="0,10,0,0" Width="200"/>
             <Button Command="{Binding DeleteItemCommand}" Content="Удалить" Margin="0,10,0,0" Width="200" />
             <Button Command="{Binding UpdateItemCommand}" Content="Изменить" Margin="0,10,0,0" Width="200" />
+            <Button Command="{Binding OpenPersonnelWindow}" Content="on next page" Margin="0,70,0,0" Width="200"/>
         </StackPanel>
     </Grid>
 </Window>

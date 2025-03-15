@@ -24,10 +24,18 @@ namespace MilitaryApp.Data.Repositories
             return await _context.Database
                 .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()").ToListAsync();
         }
-       //public Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality)
-       // {
-       //     var personnelItem = new MilitaryPersonnelItem { FirstName = name, LastName = lastName, Rank = rankId.ToString(),
-       //         Position = post, Specialties = idSpeciality.ToString() };
-       // }
+        public async Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality, int idUnit)
+        {
+            var personnelItem = new MilitaryPersonnelItem
+            {
+                FirstName = name,
+                LastName = lastName,
+                Rank = rankId.ToString(),
+                Position = post,
+                Specialties = idSpeciality.ToString(),
+                Unit = idUnit.ToString()
+            };
+           await _personnelItem.AddAsync(personnelItem);
+        }
     }
 }

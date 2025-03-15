@@ -5,11 +5,14 @@ using System.ComponentModel;
 using MilitaryApp.Data.Repositories;
 using MilitaryApp.Data.Repositories.Interfaces;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MilitaryApp.ViewModel
 {
     public class MilitaryPersonalViewModel : INotifyPropertyChanged
     {
+        public ICommand AddEntry { get; }
+
         private string _firstName;
         private string _lastName;
         private string _position;
@@ -17,6 +20,7 @@ namespace MilitaryApp.ViewModel
         private MilitaryRank _selectedRank;
         private MilitaryPersonnelItem _selectedItemPersonnel;
         private Militaryspecialty _selectedSpecialty;
+        private Militaryunit _selectedUnit;
 
         private ObservableCollection<MilitaryRank> _rankList;
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
@@ -34,11 +38,9 @@ namespace MilitaryApp.ViewModel
             _personnelRepository = personnelrepository;
             _crudRepositoryMilitarySpelty = crudRepository;
             _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
-            InitializationRankList();
-            InitializationUnitList(); // разобраться с вызовом нужно сделать асинхронным вызов 
-            InitialisationMilitarySpetialties();
+            AddEntry = new RelayCommand(async () => await AddEntries());
+           InitializationFields();
             LoadMilitaryPersonnelItem();
-            _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
         }
         private void InitializationRankList()
         {
@@ -46,7 +48,23 @@ namespace MilitaryApp.ViewModel
                     Enum.GetValues(typeof(MilitaryRank)).Cast<MilitaryRank>());
             SelectedRank = RankList.FirstOrDefault();
         }
-  
+
+        private async Task InitialisationMilitarySpetialties()
+        {
+            MilitarySpecialties = new ObservableCollection<Militaryspecialty>(await _crudRepositoryMilitarySpelty.GetAllAsync());
+            SelectedSpecialties = MilitarySpecialties.First();
+        }
+        private async Task InitializationUnitList()
+        {
+            MilitaryUnit = new ObservableCollection<Militaryunit>(await _crudRepositoryMilitaryUnit.GetAllAsync());
+            SelectedUnit  = MilitaryUnit.FirstOrDefault();
+        }
+        private async Task InitializationFields()
+        {
+             InitializationRankList();
+            await InitialisationMilitarySpetialties();
+            await InitializationUnitList();
+        }
 
         #region Properties
         public ObservableCollection<MilitaryPersonnelItem> MilitaryPersonnelItem
@@ -140,23 +158,27 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(MilitaryUnit));
             }
         }
-        #endregion
-
-        private async Task InitialisationMilitarySpetialties()
+        public Militaryunit SelectedUnit
         {
-            MilitarySpecialties = new ObservableCollection<Militaryspecialty>(await _crudRepositoryMilitarySpelty.GetAllAsync());
-           SelectedSpecialties = MilitarySpecialties.First();
+            get => _selectedUnit;
+            set
+            {
+                _selectedUnit = value;
+                OnPropertyChanged(nameof(SelectedUnit));
+            }
+        }
+        #endregion
+        private int GetIndexFromEnum()
+        {
+            return Array.IndexOf(Enum.GetValues(typeof(MilitaryRank)), SelectedRank);
+        }
+        private async Task AddEntries()
+        {
+            await _personnelRepository.AddPersonnel(FirstName, LastName,GetIndexFromEnum() , Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
         }
         private async Task LoadMilitaryPersonnelItem()
         {
-            MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(await _personnelRepository.GetMilitaryPersonnel());
-        }
-        private async Task InitializationUnitList()
-        {
-            MilitaryUnit = new ObservableCollection<Militaryunit>(await _crudRepositoryMilitaryUnit.GetAllAsync());
-            //var units = await _crudRepositoryMilitaryUnit.GetAllAsync();
-            //MessageBox.Show($"{units.Count()}");
-            //MilitaryUnit = new ObservableCollection<Militaryunit>(units);
+          MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(await _personnelRepository.GetMilitaryPersonnel());
         }
         protected void OnPropertyChanged(string propertyName)
         {

@@ -13,11 +13,11 @@ namespace MilitaryApp.Data.Repositories
     public class MilitaryPersonnelRepository : IMilitaryPersonnelRepository
     {
         private readonly MilitaryDbContext _context;
-        private readonly BaseCrudAbstract<MilitaryPersonnelItem> _personnelItem;
+        private readonly BaseCrudAbstract<Militarypersonnel> _personnelItem;
         public MilitaryPersonnelRepository (MilitaryDbContext context) 
         {
             _context = context;
-            _personnelItem = new BaseCrudAbstract<MilitaryPersonnelItem>(_context);
+            _personnelItem = new BaseCrudAbstract<Militarypersonnel>(_context);
         }
         public async Task<List<MilitaryPersonnelItem>> GetMilitaryPersonnel()
         {
@@ -25,16 +25,17 @@ namespace MilitaryApp.Data.Repositories
                 .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()").ToListAsync();
         }
         public async Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality, int idUnit)
-        {
-            var personnelItem = new MilitaryPersonnelItem
+        {//пофиксить метод добавить сбор объекта дто а
+
+            var unit = await  _context.Militaryunits.FindAsync(idUnit);
+            var personnelItem = new Militarypersonnel
             {
                 FirstName = name,
                 LastName = lastName,
                 Rank = rankId.ToString(),
-                Position = post,
-                Specialties = idSpeciality.ToString(),
-                Unit = idUnit.ToString()
+                Unit = unit
             };
+
            await _personnelItem.AddAsync(personnelItem);
         }
     }

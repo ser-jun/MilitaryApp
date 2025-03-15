@@ -9,14 +9,9 @@ using MilitaryApp.Models;
 
 namespace MilitaryApp.Models
 {
-    public  class PersonnelSpecialties
+    public class PersonnelSpecialties
     {
-        [Key]
-        [Column(Order = 1)]
         public int PersonnelId { get; set; }
-
-        [Key]
-        [Column(Order = 2)]
         public int SpecialtyId { get; set; }
 
         [ForeignKey(nameof(PersonnelId))]

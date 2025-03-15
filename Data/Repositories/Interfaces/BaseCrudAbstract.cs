@@ -7,11 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using MilitaryApp.DTO;
-using MilitaryApp.Data.Repositories.Interfaces;
 
-namespace MilitaryApp.Data.Repositories
+namespace MilitaryApp.Data.Repositories.Interfaces
 {
-    public class BaseCrudAbstract <T> : ICrudRepository<T> where T : class
+    public class BaseCrudAbstract<T> : ICrudRepository<T> where T : class
     {
         protected readonly MilitaryDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -33,14 +32,14 @@ namespace MilitaryApp.Data.Repositories
         {
             try
             {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+                await _dbSet.AddAsync(entity);
+                await _context.SaveChangesAsync();
+                return entity;
             }
-            catch (DbUpdateException ex )
+            catch (DbUpdateException ex)
             {
                 MessageBox.Show(ex.InnerException?.Message);
-                throw;   
+                throw;
             }
         }
         public async Task<T> UpdateAsync(T entity)

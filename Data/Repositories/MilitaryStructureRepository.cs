@@ -1,13 +1,13 @@
-﻿    using Microsoft.EntityFrameworkCore;
-    using MilitaryApp.Data.Repositories.Interfaces;
-    using MilitaryApp.DTO;
-    using MilitaryApp.Models;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using MilitaryApp.Data.Repositories.Interfaces;
+using MilitaryApp.DTO;
+using MilitaryApp.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-    namespace MilitaryApp.Data.Repositories
-    {
-        public class MilitaryStructureRepository : IArmyRepository, IDivisionRepository, ICorpsRepository, IMilitaryUnitRepository, IMilitaryStructureRepository
+namespace MilitaryApp.Data.Repositories
+{
+    public class MilitaryStructureRepository : IArmyRepository, IDivisionRepository, ICorpsRepository, IMilitaryUnitRepository, IMilitaryStructureRepository
         
         {
             private readonly MilitaryDbContext _context;

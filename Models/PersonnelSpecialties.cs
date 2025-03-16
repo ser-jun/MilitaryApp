@@ -11,7 +11,9 @@ namespace MilitaryApp.Models
 {
     public class PersonnelSpecialties
     {
+        [Key, Column(Order = 0)]
         public int PersonnelId { get; set; }
+        [Key, Column(Order = 1)]
         public int SpecialtyId { get; set; }
 
         [ForeignKey(nameof(PersonnelId))]

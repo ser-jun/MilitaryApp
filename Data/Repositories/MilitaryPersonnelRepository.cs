@@ -15,10 +15,16 @@ namespace MilitaryApp.Data.Repositories
     {
         private readonly MilitaryDbContext _context;
         private readonly BaseCrudAbstract<Militarypersonnel> _personnelItem;
+        private readonly BaseCrudAbstract<Officer> _officer;
+        private readonly BaseCrudAbstract<Enlistedpersonnel> _enlistedPersonnel;
+        private readonly BaseCrudAbstract<PersonnelSpecialties> _personnelSpecialty;
         public MilitaryPersonnelRepository (MilitaryDbContext context) 
         {
             _context = context;
             _personnelItem = new BaseCrudAbstract<Militarypersonnel>(_context);
+            _officer = new BaseCrudAbstract<Officer>(_context);
+            _enlistedPersonnel = new BaseCrudAbstract<Enlistedpersonnel> (_context);
+            _personnelSpecialty = new BaseCrudAbstract<PersonnelSpecialties> (_context);
         }
         public async Task<List<MilitaryPersonnelItem>> GetMilitaryPersonnel()
         {
@@ -37,7 +43,43 @@ namespace MilitaryApp.Data.Repositories
                 Unit = unit
             };
            await _personnelItem.AddAsync(personnelItem);
+            if (rankId > 8)
+            {
+             await AddOfficer(personnelItem.PersonnelId, post);
+            }
+            else
+            {
+              await AddEnlistedPersonnel(personnelItem.PersonnelId, post);
+            }
+            await ConnectionBetweenPersonnelSpecialty(personnelItem.PersonnelId, idSpeciality);
+        }
+        private async Task AddOfficer(int personnelId, string post)
+        {
+            var officer = new Officer
+            {
+                PersonnelId = personnelId,
+                Position = post
+            };
+            await _officer.AddAsync(officer);
+        }
+        private async Task AddEnlistedPersonnel (int personnelId, string post)
+        {
+            var enlistedPersonnel = new Enlistedpersonnel
+            {
+                PersonnelId = personnelId,
+                Position = post
+            };
+            await _enlistedPersonnel.AddAsync(enlistedPersonnel);
+        }
 
+        private async Task ConnectionBetweenPersonnelSpecialty(int personnelId, int specialtyId)
+        {
+            var connectionPersSpetialty = new PersonnelSpecialties
+            {
+                PersonnelId = personnelId,
+                SpecialtyId = specialtyId
+            };
+            await _personnelSpecialty.AddAsync(connectionPersSpetialty);
         }
     }
 }

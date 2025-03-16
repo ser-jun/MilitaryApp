@@ -175,7 +175,9 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEntries()
         {
-            await _personnelRepository.AddPersonnel(FirstName, LastName,GetIndexFromEnum() , Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
+            await _personnelRepository.AddPersonnel(FirstName, LastName,GetIndexFromEnum(),
+                Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
+            await LoadMilitaryPersonnelItem();
         }
         private async Task LoadMilitaryPersonnelItem()
         {  

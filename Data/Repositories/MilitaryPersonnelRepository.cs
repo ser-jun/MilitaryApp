@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MilitaryApp.DTO;
 using MilitaryApp.Data.Repositories.Interfaces;
+using MilitaryApp.Models;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -22,11 +23,11 @@ namespace MilitaryApp.Data.Repositories
         public async Task<List<MilitaryPersonnelItem>> GetMilitaryPersonnel()
         {
             return await _context.Database
-                .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()").ToListAsync();
+            .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()")
+            .ToListAsync();
         }
         public async Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality, int idUnit)
-        {//пофиксить метод добавить сбор объекта дто а
-
+        {       
             var unit = await  _context.Militaryunits.FindAsync(idUnit);
             var personnelItem = new Militarypersonnel
             {
@@ -35,8 +36,8 @@ namespace MilitaryApp.Data.Repositories
                 Rank = rankId.ToString(),
                 Unit = unit
             };
-
            await _personnelItem.AddAsync(personnelItem);
+
         }
     }
 }

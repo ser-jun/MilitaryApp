@@ -26,7 +26,7 @@ namespace MilitaryApp.ViewModel
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
         private ObservableCollection<Militaryunit> _militaryUnits;
 
-        private ObservableCollection<MilitaryPersonnelItem> _militaryPersonalItem;
+        public ObservableCollection<MilitaryPersonnelItem> _militaryPersonalItem;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private readonly IMilitaryPersonnelRepository _personnelRepository;
@@ -39,8 +39,8 @@ namespace MilitaryApp.ViewModel
             _crudRepositoryMilitarySpelty = crudRepository;
             _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
             AddEntry = new RelayCommand(async () => await AddEntries());
-           InitializationFields();
-            LoadMilitaryPersonnelItem();
+
+             InitializationFields().ConfigureAwait(false);
         }
         private void InitializationRankList()
         {
@@ -64,6 +64,7 @@ namespace MilitaryApp.ViewModel
              InitializationRankList();
             await InitialisationMilitarySpetialties();
             await InitializationUnitList();
+            await LoadMilitaryPersonnelItem();
         }
 
         #region Properties
@@ -177,9 +178,11 @@ namespace MilitaryApp.ViewModel
             await _personnelRepository.AddPersonnel(FirstName, LastName,GetIndexFromEnum() , Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
         }
         private async Task LoadMilitaryPersonnelItem()
-        {
-          MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(await _personnelRepository.GetMilitaryPersonnel());
+        {  
+                var data = await _personnelRepository.GetMilitaryPersonnel();        
+                MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(data);
         }
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

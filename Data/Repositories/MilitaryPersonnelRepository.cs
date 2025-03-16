@@ -32,18 +32,19 @@ namespace MilitaryApp.Data.Repositories
             .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()")
             .ToListAsync();
         }
-        public async Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality, int idUnit)
+        public async Task AddPersonnel(string name, string lastName, string rank, string post, int idSpeciality, int idUnit)
         {       
             var unit = await  _context.Militaryunits.FindAsync(idUnit);
             var personnelItem = new Militarypersonnel
             {
                 FirstName = name,
                 LastName = lastName,
-                Rank = rankId.ToString(),
+                Rank = rank,
                 Unit = unit
             };
            await _personnelItem.AddAsync(personnelItem);
-            if (rankId > 8)
+
+            if (GetIndexFromEnum(rank)> 8)
             {
              await AddOfficer(personnelItem.PersonnelId, post);
             }
@@ -52,6 +53,11 @@ namespace MilitaryApp.Data.Repositories
               await AddEnlistedPersonnel(personnelItem.PersonnelId, post);
             }
             await ConnectionBetweenPersonnelSpecialty(personnelItem.PersonnelId, idSpeciality);
+        }
+        private int GetIndexFromEnum(string rank)
+        {
+            MilitaryRank rankToIndex = (MilitaryRank)Enum.Parse(typeof(MilitaryRank), rank);
+            return (int)rankToIndex;
         }
         private async Task AddOfficer(int personnelId, string post)
         {
@@ -71,7 +77,6 @@ namespace MilitaryApp.Data.Repositories
             };
             await _enlistedPersonnel.AddAsync(enlistedPersonnel);
         }
-
         private async Task ConnectionBetweenPersonnelSpecialty(int personnelId, int specialtyId)
         {
             var connectionPersSpetialty = new PersonnelSpecialties
@@ -80,6 +85,15 @@ namespace MilitaryApp.Data.Repositories
                 SpecialtyId = specialtyId
             };
             await _personnelSpecialty.AddAsync(connectionPersSpetialty);
+        }
+        public async Task DeletePersonnel(int personnelId)
+        {
+            var personnel = await _personnelItem.GetByIdAsync(personnelId);
+            await _personnelItem.DeleteAsync(personnel);
+        }
+        public async Task UpdatePersonnel()
+        {
+
         }
     }
 }

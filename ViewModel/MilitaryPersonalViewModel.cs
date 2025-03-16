@@ -12,6 +12,8 @@ namespace MilitaryApp.ViewModel
     public class MilitaryPersonalViewModel : INotifyPropertyChanged
     {
         public ICommand AddEntry { get; }
+        public ICommand DeleteEntry { get; }
+        public ICommand UpdateEntry { get; }
 
         private string _firstName;
         private string _lastName;
@@ -39,6 +41,7 @@ namespace MilitaryApp.ViewModel
             _crudRepositoryMilitarySpelty = crudRepository;
             _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
             AddEntry = new RelayCommand(async () => await AddEntries());
+            DeleteEntry = new RelayCommand(async () => await DeleteEnties());
 
              InitializationFields().ConfigureAwait(false);
         }
@@ -169,13 +172,14 @@ namespace MilitaryApp.ViewModel
             }
         }
         #endregion
-        private int GetIndexFromEnum()
+        private string GetMeaningFromEnum()
         {
-            return Array.IndexOf(Enum.GetValues(typeof(MilitaryRank)), SelectedRank);
+            MilitaryRank rank = (MilitaryRank)SelectedRank;
+                 return rank.ToString();
         }
         private async Task AddEntries()
         {
-            await _personnelRepository.AddPersonnel(FirstName, LastName,GetIndexFromEnum(),
+            await _personnelRepository.AddPersonnel(FirstName, LastName,GetMeaningFromEnum(),
                 Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
             await LoadMilitaryPersonnelItem();
         }
@@ -184,7 +188,11 @@ namespace MilitaryApp.ViewModel
                 var data = await _personnelRepository.GetMilitaryPersonnel();        
                 MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(data);
         }
-
+        private async Task DeleteEnties()
+        {
+            await _personnelRepository.DeletePersonnel(SelectedItemPersonnel.PersonnelId ?? 0);
+            await LoadMilitaryPersonnelItem();
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿    using System;
+    using System.Collections.Generic;
 
-namespace MilitaryApp.Models;
+    namespace MilitaryApp.Models;
 
-public partial class Militaryspecialty
-{
-    public int SpecialtyId { get; set; }
+    public partial class Militaryspecialty
+    {
+        public int SpecialtyId { get; set; }
 
-    public string Name { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
-    public virtual ICollection<Militarypersonnel> Personnel { get; set; } = new List<Militarypersonnel>();
+    public virtual ICollection<PersonnelSpecialties> Personnel { get; set; } = new List<PersonnelSpecialties>();
 }

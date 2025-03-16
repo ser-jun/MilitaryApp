@@ -11,6 +11,8 @@ namespace MilitaryApp.Data.Repositories.Interfaces
     public interface IMilitaryPersonnelRepository
     {
         Task<List<MilitaryPersonnelItem>> GetMilitaryPersonnel();
-        Task AddPersonnel(string name, string lastName, int rankId, string post, int idSpeciality, int idUnit);
+        Task AddPersonnel(string name, string lastName, string rank, string post, int idSpeciality, int idUnit);
+        Task DeletePersonnel(int personnelId);
+        Task UpdatePersonnel();
     }
 }

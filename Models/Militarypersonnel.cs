@@ -21,5 +21,5 @@ public partial class Militarypersonnel
 
     public virtual Militaryunit? Unit { get; set; }
 
-    public virtual ICollection<Militaryspecialty> Specialties { get; set; } = new List<Militaryspecialty>();
+    public virtual ICollection<PersonnelSpecialties> Specialties { get; set; } = new List<PersonnelSpecialties>();
 }

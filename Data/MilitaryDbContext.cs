@@ -190,26 +190,6 @@ public partial class MilitaryDbContext : DbContext
                 .HasForeignKey(d => d.UnitId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("militarypersonnel_ibfk_1");
-
-            entity.HasMany(d => d.Specialties).WithMany(p => p.Personnel)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Personnelspecialty",
-                    r => r.HasOne<Militaryspecialty>().WithMany()
-                        .HasForeignKey("SpecialtyId")
-                        .HasConstraintName("personnelspecialties_ibfk_2"),
-                    l => l.HasOne<Militarypersonnel>().WithMany()
-                        .HasForeignKey("PersonnelId")
-                        .HasConstraintName("personnelspecialties_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("PersonnelId", "SpecialtyId")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("personnelspecialties");
-                        j.HasIndex(new[] { "SpecialtyId" }, "specialty_id");
-                        j.IndexerProperty<int>("PersonnelId").HasColumnName("personnel_id");
-                        j.IndexerProperty<int>("SpecialtyId").HasColumnName("specialty_id");
-                    });
         });
 
         modelBuilder.Entity<Militaryspecialty>(entity =>
@@ -351,6 +331,31 @@ public partial class MilitaryDbContext : DbContext
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasColumnName("type");
+        });
+        modelBuilder.Entity<PersonnelSpecialties>(entity =>
+        {
+            entity.HasKey(ps => new { ps.PersonnelId, ps.SpecialtyId }) 
+                  .HasName("PRIMARY")
+                  .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("personnelspecialties");
+
+            entity.HasIndex(e => e.SpecialtyId, "specialty_id");
+
+            entity.Property(e => e.PersonnelId).HasColumnName("personnel_id");
+            entity.Property(e => e.SpecialtyId).HasColumnName("specialty_id");
+
+            entity.HasOne(d => d.Personnel)
+                  .WithMany(p => p.Specialties)
+                  .HasForeignKey(d => d.PersonnelId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("personnelspecialties_ibfk_1");
+
+            entity.HasOne(d => d.Specialty)
+                  .WithMany(p => p.Personnel)
+                  .HasForeignKey(d => d.SpecialtyId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("personnelspecialties_ibfk_2");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MilitaryApp.DTO;
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.Models;
+using System.Windows;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -91,9 +92,85 @@ namespace MilitaryApp.Data.Repositories
             var personnel = await _personnelItem.GetByIdAsync(personnelId);
             await _personnelItem.DeleteAsync(personnel);
         }
-        public async Task UpdatePersonnel()
+        private async Task DeleteOfficer(int idOfficer)
         {
+            //var officer = await _officer.GetByIdAsync(idOfficer);
 
+            var officer = await _context.Officers.FirstOrDefaultAsync(x => x.PersonnelId == idOfficer);
+            await _officer.DeleteAsync(officer);
+        }
+        private async Task DeleteEnlistedPersonnel(int idEnlistedPersonnnel)
+        {
+            //var enlistedPersonnel = await _enlistedPersonnel.GetByIdAsync(idEnlistedPersonnnel);
+            var enlistedPersonnel = await _context.Enlistedpersonnel.FirstOrDefaultAsync(x => x.PersonnelId == idEnlistedPersonnnel);
+            await _enlistedPersonnel.DeleteAsync(enlistedPersonnel);
+        }
+        public async Task UpdateItem(int selectEntry, string newName, string newLastName, string newRank, string newPost, int newIdSpecialty, int newIdUnit)
+        {
+            var selectedPersonnel = await _personnelItem.GetByIdAsync(selectEntry);
+            if (selectedPersonnel == null) return;
+
+            int currentIndexRank = GetIndexFromEnum(selectedPersonnel.Rank);
+            int newIndexRank = GetIndexFromEnum(newRank);
+
+            await UpdatePersonnel(selectEntry, newName, newLastName, newRank, newIdUnit);
+
+            if ((currentIndexRank <= 8 && newIndexRank > 8) || (currentIndexRank > 8 && newIndexRank <= 8))
+            {
+                if (currentIndexRank > 8)
+                {
+                    await DeleteOfficer(selectedPersonnel.PersonnelId);
+                }
+                else
+                {
+                    await DeleteEnlistedPersonnel(selectedPersonnel.PersonnelId);
+                }
+
+                if (newIndexRank > 8)
+                {
+                    await AddOfficer(selectedPersonnel.PersonnelId, newPost);// какие то траблы с добавлением именно тут и что-то в методоах update
+                }
+                else
+                {
+                    await AddEnlistedPersonnel(selectedPersonnel.PersonnelId, newPost);
+                }
+            }
+            else
+            {
+                if (newIndexRank > 8)
+                {
+                    await UpdateOfficer(selectedPersonnel.PersonnelId, newPost);
+                }
+                else
+                {
+                    await UpdateEnlistedPersonnel(selectedPersonnel.PersonnelId, newPost);
+                }
+            }
+            await ConnectionBetweenPersonnelSpecialty(selectedPersonnel.PersonnelId, newIdSpecialty);
+        }
+
+        private async Task UpdatePersonnel(int selectPerson, string newName, string newLastName, string newRank, int idNewUnit)
+
+        {
+            var personnel = await _personnelItem.GetByIdAsync(selectPerson);
+            var newUnit = await _context.Militaryunits.FindAsync(idNewUnit);
+            personnel.FirstName = newName;
+            personnel.LastName = newLastName;
+            personnel.Rank = newRank;
+            personnel.Unit = newUnit;
+            await _personnelItem.UpdateAsync(personnel);
+        }
+        private async Task UpdateOfficer(int selectedOfficer,  string newPosition)
+        {
+            var officer = await _officer.GetByIdAsync(selectedOfficer);
+            officer.Position = newPosition;
+            await _officer.UpdateAsync(officer);
+        }
+        private async Task UpdateEnlistedPersonnel(int selectedEnlistedPersonnel,  string newPosition)
+        {
+            var enlistedPersonnel = await _enlistedPersonnel.GetByIdAsync(selectedEnlistedPersonnel);
+            enlistedPersonnel.Position = newPosition;
+            await _enlistedPersonnel.UpdateAsync(enlistedPersonnel);
         }
     }
 }

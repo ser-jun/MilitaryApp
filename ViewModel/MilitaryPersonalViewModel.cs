@@ -42,6 +42,7 @@ namespace MilitaryApp.ViewModel
             _crudRepositoryMilitaryUnit = crudRepositoryMilitaryUnit;
             AddEntry = new RelayCommand(async () => await AddEntries());
             DeleteEntry = new RelayCommand(async () => await DeleteEnties());
+            UpdateEntry = new RelayCommand(async () => await UpdateEnies());
 
              InitializationFields().ConfigureAwait(false);
         }
@@ -191,6 +192,12 @@ namespace MilitaryApp.ViewModel
         private async Task DeleteEnties()
         {
             await _personnelRepository.DeletePersonnel(SelectedItemPersonnel.PersonnelId ?? 0);
+            await LoadMilitaryPersonnelItem();
+        }
+        private async Task UpdateEnies()
+        {
+            await _personnelRepository.UpdateItem(SelectedItemPersonnel.PersonnelId ?? 0, FirstName, LastName, GetMeaningFromEnum(),
+                Position,SelectedSpecialties.SpecialtyId,SelectedUnit.UnitId.Value);
             await LoadMilitaryPersonnelItem();
         }
         protected void OnPropertyChanged(string propertyName)

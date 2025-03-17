@@ -13,6 +13,6 @@ namespace MilitaryApp.Data.Repositories.Interfaces
         Task<List<MilitaryPersonnelItem>> GetMilitaryPersonnel();
         Task AddPersonnel(string name, string lastName, string rank, string post, int idSpeciality, int idUnit);
         Task DeletePersonnel(int personnelId);
-        Task UpdatePersonnel();
+        Task UpdateItem(int selectEntry, string newName, string newLastName, string newRank, string newPost, int newIdSpecialty, int newIdUnit);
     }
 }

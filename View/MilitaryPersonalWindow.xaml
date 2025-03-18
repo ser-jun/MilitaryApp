@@ -16,6 +16,7 @@
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
+            
             <DataGrid AutoGenerateColumns="False" 
           ItemsSource="{Binding MilitaryPersonnelItem}" 
           SelectedItem="{Binding SelectedItemPersonnel}" 

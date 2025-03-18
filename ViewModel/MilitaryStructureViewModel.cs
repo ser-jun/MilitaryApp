@@ -16,6 +16,7 @@ namespace MilitaryApp.ViewModel
         public ICommand UpdateItemCommand { get; }
         public ICommand OpenPersonnelWindowCommand { get; }
         public ICommand OpenEquipmentWindowCommand { get; }
+        public ICommand OpenWeaponWindowCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -51,6 +52,7 @@ namespace MilitaryApp.ViewModel
             UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
             OpenPersonnelWindowCommand = new RelayCommand(OpenPersonnelWindow);
             OpenEquipmentWindowCommand = new RelayCommand(OpenEquipmentWindow);
+            OpenWeaponWindowCommand = new RelayCommand(OpenWeaponWindow);
 
             StructureTypes = new ObservableCollection<string>
             {
@@ -269,6 +271,12 @@ namespace MilitaryApp.ViewModel
             EquipmentWindow equipmentWindow = new EquipmentWindow();
             Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
             equipmentWindow.Show();
+        }
+        private void OpenWeaponWindow()
+        {
+            WeaponWindow weaponWindow = new WeaponWindow();
+            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();  
+            weaponWindow.Show();
         }
 
         protected void OnPropertyChanged(string propertyName)

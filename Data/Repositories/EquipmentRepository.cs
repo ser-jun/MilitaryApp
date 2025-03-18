@@ -64,9 +64,6 @@ namespace MilitaryApp.Data.Repositories
                 Quantity = newQuantity
             };
             await _unitcombatEquipment.AddAsync(newUnitCombatequipment);
-            //entity.UnitId = newUnitId;
-            //entity.Quantity = newQuantity;
-            //await _unitcombatEquipment.UpdateAsync(entity); 
         }
         private async Task ConnectionBetweenUnitEquipment(int unitId, int equipmentId, int quantity)
         {

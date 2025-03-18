@@ -196,6 +196,11 @@ namespace MilitaryApp.ViewModel
         }
         private async Task UpdateEnies()
         {
+            if (SelectedItemPersonnel== null)
+            {
+                MessageBox.Show("Выберите запись которую хотите редактировать");
+                return;
+            }
             await _personnelRepository.UpdateItem(SelectedItemPersonnel.PersonnelId ?? 0, FirstName, LastName, GetMeaningFromEnum(),
                 Position,SelectedSpecialties.SpecialtyId,SelectedUnit.UnitId.Value);
             await LoadMilitaryPersonnelItem();

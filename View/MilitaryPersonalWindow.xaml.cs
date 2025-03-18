@@ -29,7 +29,6 @@ namespace MilitaryApp.View
         {
             InitializeComponent();
             var context = new MilitaryDbContext();
-            //var militarySpeltiesRepository = new MilitaryPersonnelRepository<Militaryspecialty>(context);
             IMilitaryPersonnelRepository militarySpeltiesRepository = new MilitaryPersonnelRepository(context);
             ICrudRepository<Militaryspecialty> crudRepository = new BaseCrudAbstract<Militaryspecialty>(context);
             ICrudRepository<Militaryunit> militaryUnitRepository= new BaseCrudAbstract<Militaryunit>(context);

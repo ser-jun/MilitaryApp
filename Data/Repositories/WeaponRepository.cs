@@ -50,5 +50,25 @@ namespace MilitaryApp.Data.Repositories
             var weapon = await _crudWeapon.GetByIdAsync(weaponId);
             await _crudWeapon.DeleteAsync(weapon);
         } 
+        public async Task UpdateWeapon(int weaponId, int newUnitId, string newName, string newType, int newQuantity)
+        {
+            var weapon = await _crudWeapon.GetByIdAsync(weaponId);
+            weapon.Name = newName;
+            weapon.Type = newType;
+          await  _crudWeapon.UpdateAsync(weapon);
+            await UpdateConnectionBetweenUnitWeapon(newUnitId, weaponId, newQuantity);
+        }
+        private async Task UpdateConnectionBetweenUnitWeapon(int unitId, int weaponId, int quantity)
+        {
+            var item = await _context.Unitweapons.FirstOrDefaultAsync(w => w.WeaponId == weaponId);
+            await _crudUnitWeapon.DeleteAsync(item);
+            var newUnitWeapon = new Unitweapon
+            {
+               UnitId= unitId,
+               WeaponId = weaponId,
+               Quantity = quantity
+            };
+            await _crudUnitWeapon.AddAsync(newUnitWeapon);
+        }
     }
 }

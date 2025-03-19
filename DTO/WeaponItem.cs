@@ -11,8 +11,8 @@ namespace MilitaryApp.DTO
         public int WeaponId { get; set; }   
         public string? NameWeapon { get; set; }  
         public string? TypeWeapon { get; set; }
-        public int UnitId { get; set; }
-        public int Quantity { get; set; }
+        public int? UnitId { get; set; }
+        public int? Quantity { get; set; }
         public string? NameUnit { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace MilitaryApp.Data.Repositories.Interfaces
         Task<List<WeaponItem>> GetWeaponInfoAsync();
         Task AddWeapon(int unitId, string name, string type, int quantity);
         Task DeleteWeapon(int weaponId);
+        Task UpdateWeapon(int weaponId, int newUnitId, string newName, string newType, int newQuantity);
     }
 }

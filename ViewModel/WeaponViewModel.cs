@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MilitaryApp.ViewModel
@@ -16,6 +17,7 @@ namespace MilitaryApp.ViewModel
     {
         public ICommand AddEntry { get; }
         public ICommand DeleteEntry { get; }
+        public ICommand UpdateEntry { get; }
         private readonly IWeaponRepository _weaponRepository;
         private readonly ICrudRepository<Militaryunit> _militaryUnitRepository;
 
@@ -35,6 +37,7 @@ namespace MilitaryApp.ViewModel
             _militaryUnitRepository = militaryUnitRepository;
             AddEntry = new RelayCommand(async () => await AddWeapon());
             DeleteEntry = new RelayCommand(async () => await DeleteWeapon());
+            UpdateEntry = new RelayCommand(async () => await UpdateWeapon());   
             InitializeField().ConfigureAwait(false);
         }
 
@@ -118,11 +121,26 @@ namespace MilitaryApp.ViewModel
         private async Task AddWeapon()
         {
             await _weaponRepository.AddWeapon(SelectedMilitaryUnit.UnitId.Value, NameWeapon, TypeWeapon, Quantity);
-            LoadInfoWeapon();
+            try
+            {
+            await  LoadInfoWeapon();
+
+            }
+            catch (InvalidCastException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }   
         }
         private async Task DeleteWeapon()
         {
+            if (SelectedMilitaryUnit == null) return;
             await _weaponRepository.DeleteWeapon(SelectedWeaponItem.WeaponId);
+            await LoadInfoWeapon();
+        }
+        private async Task UpdateWeapon()
+        {
+            if (SelectedWeaponItem == null) return;
+            await _weaponRepository.UpdateWeapon(SelectedWeaponItem.WeaponId, SelectedMilitaryUnit.UnitId.Value, NameWeapon, TypeWeapon, Quantity);
             await LoadInfoWeapon();
         }
         protected void OnPropertyChanged(string propertyName)

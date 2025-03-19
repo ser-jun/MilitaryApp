@@ -22,8 +22,9 @@ namespace MilitaryApp
             ICorpsRepository corpsRepository = new MilitaryStructureRepository(context);
             IMilitaryUnitRepository militaryUnitRepository = new MilitaryStructureRepository(context);
             IMilitaryStructureRepository militaryStructureRepository = new MilitaryStructureRepository(context);
+            ISubUnitRepository subUnitRepository = new MilitaryStructureRepository(context);
 
-            var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository, militaryStructureRepository);
+            var viewModel = new MilitaryStructureViewModel(armyRepository, divisionRepository, corpsRepository, militaryUnitRepository, militaryStructureRepository, subUnitRepository);
             this.DataContext = viewModel;
         }
     }

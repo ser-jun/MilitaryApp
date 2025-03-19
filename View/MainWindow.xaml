@@ -29,6 +29,7 @@
                 <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
                 <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />
                 <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" />
+                <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" />
             </DataGrid.Columns>
         </DataGrid>
 
@@ -58,6 +59,9 @@
                                 <Setter Property="IsEnabled" Value="True"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding SelectedStructureType}" Value="Военная часть">
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedStructureType}" Value="Подразделение части">
                                 <Setter Property="IsEnabled" Value="True"/>
                             </DataTrigger>
                         </Style.Triggers>

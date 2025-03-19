@@ -10,6 +10,8 @@
         public string CorpsName { get; set; } = null!;
         public int? UnitId { get; set; }
         public string UnitName { get; set; } = null!;
-        public string Name => ArmyName ?? DivisionName ?? CorpsName ?? UnitName;
+        public int? SubUnitId { get; set; }
+        public string SubUnitName { get; set; }=null!;
+        public string Name => ArmyName ?? DivisionName ?? CorpsName ?? UnitName ?? SubUnitName;
     }
 }

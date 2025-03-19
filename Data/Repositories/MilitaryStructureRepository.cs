@@ -5,7 +5,7 @@ using MilitaryApp.Models;
 
 namespace MilitaryApp.Data.Repositories
 {
-    public class MilitaryStructureRepository : IArmyRepository, IDivisionRepository, ICorpsRepository, IMilitaryUnitRepository, IMilitaryStructureRepository
+    public class MilitaryStructureRepository : IArmyRepository, IDivisionRepository, ICorpsRepository, IMilitaryUnitRepository, IMilitaryStructureRepository, ISubUnitRepository
 
     {
         private readonly MilitaryDbContext _context;
@@ -13,7 +13,7 @@ namespace MilitaryApp.Data.Repositories
         private readonly BaseCrudAbstract<Division> _divisionRepo;
         private readonly BaseCrudAbstract<Corps> _corpsRepo;
         private readonly BaseCrudAbstract<Militaryunit> _unitRepo;
-        
+        private readonly BaseCrudAbstract<Subunit> _subunitRepo;
 
         public MilitaryStructureRepository(MilitaryDbContext context)
         {
@@ -22,6 +22,7 @@ namespace MilitaryApp.Data.Repositories
             _divisionRepo = new BaseCrudAbstract<Division>(_context);
             _corpsRepo = new BaseCrudAbstract<Corps>(_context);
             _unitRepo = new BaseCrudAbstract<Militaryunit>(_context);
+            _subunitRepo = new BaseCrudAbstract<Subunit>(_context);
         }
 
         public async Task<List<MilitaryStructureItem>> GetMilitaryStructure()
@@ -59,6 +60,12 @@ namespace MilitaryApp.Data.Repositories
             if (unitToDelete != null)
                 await _unitRepo.DeleteAsync(unitToDelete);
         }
+        public async Task DeleteSubUnit(int subUnitId)
+        {
+            var subUnitToDelete = await _subunitRepo.GetByIdAsync(subUnitId);
+            if (subUnitToDelete != null)
+                await _subunitRepo.DeleteAsync(subUnitToDelete);
+        }
         #endregion
 
         #region AddMethods
@@ -87,7 +94,8 @@ namespace MilitaryApp.Data.Repositories
         }
         public async Task AddSubUnit(string name, int unitId)
         {
-
+            var subUnit = new Subunit { SubunitName = name, UnitId = unitId };      
+            await _subunitRepo.AddAsync(subUnit);
         }
         #endregion
 
@@ -132,6 +140,16 @@ namespace MilitaryApp.Data.Repositories
                 unit.Name = newName;
                 unit.CorpsId = newCorpsId;
                 await _unitRepo.UpdateAsync(unit);
+            }
+        }
+        public async Task UpdateSubUnit(int subUnitId, string newName, int newUnitId)
+        {
+            var subUnit = await _subunitRepo.GetByIdAsync(subUnitId);
+            if (subUnit != null)
+            {
+                subUnit.SubunitName = newName;
+                subUnit.UnitId = newUnitId;
+                await _subunitRepo.UpdateAsync(subUnit);
             }
         }
         #endregion

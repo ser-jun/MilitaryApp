@@ -33,19 +33,22 @@ namespace MilitaryApp.ViewModel
         private readonly ICorpsRepository _corpsRepository;
         private readonly IMilitaryUnitRepository _unitRepository;
         private readonly IMilitaryStructureRepository _structureRepository;
+        private readonly ISubUnitRepository _subUnitRepository;
 
         public MilitaryStructureViewModel(
              IArmyRepository armyRepository,
              IDivisionRepository divisionRepository,
              ICorpsRepository corpsRepository,
              IMilitaryUnitRepository unitRepository,
-             IMilitaryStructureRepository structureRepository)
+             IMilitaryStructureRepository structureRepository,
+             ISubUnitRepository subUnitRepository)
         {
             _armyRepository = armyRepository;
             _divisionRepository = divisionRepository;
             _corpsRepository = corpsRepository;
             _unitRepository = unitRepository;
             _structureRepository = structureRepository;
+            _subUnitRepository = subUnitRepository;
 
             AddItemCommand = new RelayCommand(async () => await AddItem());
             DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
@@ -56,7 +59,7 @@ namespace MilitaryApp.ViewModel
 
             StructureTypes = new ObservableCollection<string>
             {
-                "Армия", "Дивизия", "Корпус", "Военная часть"
+                "Армия", "Дивизия", "Корпус", "Военная часть", "Подразделение части"
             };
 
             ParentItems = new ObservableCollection<MilitaryStructureItem>();
@@ -167,6 +170,9 @@ namespace MilitaryApp.ViewModel
                     case "Военная часть":
                         await _unitRepository.DeleteUnit(SelectedItem.UnitId ?? 0);
                         break;
+                case "Подразделение части":
+                    await _subUnitRepository.DeleteSubUnit(SelectedItem.SubUnitId ?? 0);
+                    break;
                 }
                 await LoadMilitaryStructureItems();
   
@@ -193,6 +199,10 @@ namespace MilitaryApp.ViewModel
                         if (SelectedParentItem?.CorpsId != null)
                             await _unitRepository.AddMilitaryUnit(NewItemName, SelectedParentItem.CorpsId.Value);
                         break;
+                case "Подразделение части":
+                    if (SelectedParentItem?.UnitId != null)
+                        await _subUnitRepository.AddSubUnit(NewItemName, SelectedParentItem.UnitId.Value);
+                    break;
                 }
                 await LoadMilitaryStructureItems();
         }
@@ -216,15 +226,18 @@ namespace MilitaryApp.ViewModel
                 case "Военная часть":
                     await _unitRepository.UpdateMilitaryUnit(SelectedItem.UnitId ?? 0, NewItemName, SelectedParentItem.CorpsId ?? 0);
                     break;
+                case "Подразделение части":
+                    await _subUnitRepository.UpdateSubUnit(SelectedItem.SubUnitId ?? 0, NewItemName, SelectedParentItem.UnitId ?? 0);   
+                    break;
             }
             await LoadMilitaryStructureItems();
 
         }
 
         #endregion
-
         private void UpdateParentItems()
         {
+
             switch (SelectedStructureType)
             {
                 case "Дивизия":
@@ -253,6 +266,15 @@ namespace MilitaryApp.ViewModel
                                                   CorpsId = item.CorpsId,
                                                   CorpsName = item.CorpsName
                                               }).ToList());
+                    break;
+                case "Подразделение части":
+                    ParentItems = new ObservableCollection<MilitaryStructureItem>(
+                        MilitaryStructureItems.Where(item => item.UnitId.HasValue)
+                        .Select(item => new MilitaryStructureItem
+                        {
+                            UnitId = item.UnitId,
+                            UnitName = item.UnitName
+                        }).ToList());
                     break;
                 default:
                     ParentItems = new ObservableCollection<MilitaryStructureItem>();

@@ -180,6 +180,10 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEntries()
         {
+            if (Position.ToLower().Trim() == "командир части" && SelectedUnit.CommanderId != null)
+            {
+                return;
+            }
             await _personnelRepository.AddPersonnel(FirstName, LastName,GetMeaningFromEnum(),
                 Position, SelectedSpecialties.SpecialtyId, SelectedUnit.UnitId.Value);
             await LoadMilitaryPersonnelItem();
@@ -191,6 +195,11 @@ namespace MilitaryApp.ViewModel
         }
         private async Task DeleteEnties()
         {
+            if (SelectedItemPersonnel == null)
+            {
+                MessageBox.Show("Выберите запись которую хотите удалить");
+                return;
+            }
             await _personnelRepository.DeletePersonnel(SelectedItemPersonnel.PersonnelId ?? 0);
             await LoadMilitaryPersonnelItem();
         }

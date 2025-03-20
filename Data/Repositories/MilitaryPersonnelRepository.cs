@@ -2,6 +2,8 @@
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.DTO;
 using MilitaryApp.Models;
+using System.Windows;
+using System.Windows.Documents;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -40,7 +42,7 @@ namespace MilitaryApp.Data.Repositories
 
             if (GetIndexFromEnum(rank) > 8)
             {
-                await AddOfficer(personnelItem.PersonnelId, post);
+                await AddOfficer(personnelItem.PersonnelId, post, unit);
             }
             else
             {
@@ -53,14 +55,26 @@ namespace MilitaryApp.Data.Repositories
             MilitaryRank rankToIndex = (MilitaryRank)Enum.Parse(typeof(MilitaryRank), rank);
             return (int)rankToIndex;
         }
-        public async Task AddOfficer(int personnelId, string post)
+
+        public async Task AddOfficer(int personnelId, string post, Militaryunit unit)
         {
+            
+
             var officer = new Officer
             {
                 PersonnelId = personnelId,
                 Position = post
+
             };
             await _officer.AddAsync(officer);
+
+            if (officer.Position.ToLower().Trim() == "командир части")
+            {
+                unit.CommanderId = officer.OfficerId;
+                await _context.SaveChangesAsync();
+            }
+
+
         }
         public async Task AddEnlistedPersonnel(int personnelId, string post)
         {
@@ -111,6 +125,7 @@ namespace MilitaryApp.Data.Repositories
         public async Task UpdateItem(int selectEntry, string newName, string newLastName, string newRank, string newPost, int newIdSpecialty, int newIdUnit)
         {
             var selectedPersonnel = await _personnelItem.GetByIdAsync(selectEntry);
+            var unit = await _context.Militaryunits.FindAsync(newIdUnit);
 
             int currentIndexRank = GetIndexFromEnum(selectedPersonnel.Rank);
             int newIndexRank = GetIndexFromEnum(newRank);
@@ -130,7 +145,7 @@ namespace MilitaryApp.Data.Repositories
 
                 if (newIndexRank > 8)
                 {
-                    await AddOfficer(selectedPersonnel.PersonnelId, newPost);
+                    //await AddOfficer(selectedPersonnel.PersonnelId, newPost, unit);
                 }
                 else
                 {

@@ -89,7 +89,11 @@ namespace MilitaryApp.Data.Repositories
 
         public async Task AddMilitaryUnit(string name, int corpsId)
         {
-            var unit = new Militaryunit { Name = name, CorpsId = corpsId };
+            var unit = new Militaryunit
+            { 
+                Name = name,
+                CorpsId = corpsId 
+            };
             await _unitRepo.AddAsync(unit);
         }
         public async Task AddSubUnit(string name, int unitId)

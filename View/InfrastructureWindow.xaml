@@ -9,6 +9,15 @@
         ResizeMode="NoResize"
         WindowState="Maximized">
     <Grid>
-        
+        <DataGrid IsReadOnly="True"
+            ItemsSource="{Binding InfrastructureItem}"
+                  SelectedItem="{Binding SelectedInfrastructure}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}"/>
+                <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
     </Grid>
 </Window>

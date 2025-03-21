@@ -182,6 +182,7 @@ namespace MilitaryApp.ViewModel
         {
             if (Position.ToLower().Trim() == "командир части" && SelectedUnit.CommanderId != null)
             {
+                MessageBox.Show("У данной части есть командир");
                 return;
             }
             await _personnelRepository.AddPersonnel(FirstName, LastName,GetMeaningFromEnum(),

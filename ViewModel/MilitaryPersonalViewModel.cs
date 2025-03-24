@@ -27,10 +27,21 @@ namespace MilitaryApp.ViewModel
         private Militaryspecialty _selectedSpecialty;
         private Militaryunit _selectedUnit;
         private Militaryunit _selectedUnitId;
+        private Militaryspecialty _selectedMilitarySpecialty;
+        private Army _selectedArmyFilter;
+        private Division _selectedDivisionFilter;
+        private Corps _selectedCorpsFilter;
+        private Militaryunit _selectedUnitFilter;
 
         private ObservableCollection<MilitaryRank> _rankList;
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
         private ObservableCollection<Militaryunit> _militaryUnits;
+        private ObservableCollection<Army> _armyFilter;
+        private ObservableCollection<Division> _divisionFilter;
+        private ObservableCollection<Corps> _corpsFilter;
+        private ObservableCollection<Militaryunit> _unitFilter;
+
+        
 
         public ObservableCollection<MilitaryPersonnelItem> _militaryPersonalItem;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -38,6 +49,10 @@ namespace MilitaryApp.ViewModel
         private readonly IMilitaryPersonnelRepository _personnelRepository;
         private readonly ICrudRepository<Militaryspecialty> _crudRepositoryMilitarySpelty;
         private readonly ICrudRepository<Militaryunit> _crudRepositoryMilitaryUnit;
+        private readonly ICrudRepository<Army> _crudRepositoryArmy;
+        private readonly ICrudRepository<Division> _crudRepositoryDivision;
+        private readonly ICrudRepository<Corps> _crudRepositoryCorps;
+        
 
         public MilitaryPersonalViewModel(IMilitaryPersonnelRepository personnelrepository, ICrudRepository<Militaryspecialty> crudRepository, ICrudRepository<Militaryunit> crudRepositoryMilitaryUnit)
         {
@@ -196,6 +211,88 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedRankFilter));
             }
         }
+        public Militaryspecialty SelectedSpecialtyFilter
+        {
+            get => _selectedMilitarySpecialty;
+            set
+            {
+                _selectedMilitarySpecialty = value;
+                OnPropertyChanged(nameof(SelectedSpecialtyFilter));
+            }
+        }
+        public ObservableCollection<Army> ArmyFilter
+        {
+            get => _armyFilter;
+            set
+            {
+                _armyFilter = value;
+                OnPropertyChanged(nameof(ArmyFilter));
+            }
+        }
+        public ObservableCollection<Division> DivisionFilter
+        {
+            get => _divisionFilter;
+            set
+            {
+                _divisionFilter = value;
+                OnPropertyChanged(nameof(DivisionFilter));
+            }
+        }
+        public ObservableCollection<Corps> CorpsFilter
+        {
+            get => _corpsFilter;
+            set
+            {
+                _corpsFilter = value;
+                OnPropertyChanged(nameof(CorpsFilter));
+            }
+        }
+        public ObservableCollection<Militaryunit> UnitFilter
+        {
+            get => _unitFilter;
+            set
+            {
+                _unitFilter = value;
+                OnPropertyChanged(nameof(UnitFilter));
+            }
+        }
+        public Army SelectedArmy
+        {
+            get => _selectedArmyFilter;
+            set
+            {
+                _selectedArmyFilter = value;
+                OnPropertyChanged(nameof(SelectedArmy));
+            }
+        }
+        public Division SelectedDivision
+        {
+            get => _selectedDivisionFilter;
+            set
+            {
+                _selectedDivisionFilter = value;
+                OnPropertyChanged(nameof(SelectedDivision));
+            }
+        }
+        public Corps SelectedCorps
+        {
+            get => _selectedCorpsFilter;
+            set
+            {
+                _selectedCorpsFilter = value;
+                OnPropertyChanged(nameof(SelectedCorps));
+            }
+        }
+        public Militaryunit SelectedUnitFilter
+        {
+            get => _selectedUnitFilter;
+            set
+            {
+                _selectedUnitFilter = value;
+                OnPropertyChanged(nameof(SelectedUnitFilter));
+            }
+        }
+
         #endregion
         private string GetMeaningFromEnum()
         {
@@ -248,6 +345,10 @@ namespace MilitaryApp.ViewModel
             var filteredPersonnel = await _personnelRepository.SearchMilitaryPersonnel(rankFilter, unitId);
 
             MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(filteredPersonnel);
+        }
+        private async Task SearchMilitaryPersonnelBySpecialty()
+        {
+
         }
         private async Task ResetFilter()
         {

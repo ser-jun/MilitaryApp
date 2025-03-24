@@ -11,7 +11,7 @@ namespace MilitaryApp.Data.Repositories.Interfaces
     {
         Task<List<Infrastructure>> LoadInfrastructureInfo();
         Task AddInfrastructureItem(string name, int unitId, int yearBuild);
-        Task DeleteInfrastructure(int idInfrastructure);
-        Task UpdateInfrastructure(int selectedInfrastructureId, string newName, int newUnitId, int newYearBuild);
+        Task DeleteInfrastructureItem(int idInfrastructure);
+        Task UpdateInfrastructureItem(int selectedInfrastructureId, string newName, int newUnitId, int newYearBuild);
     }
 }

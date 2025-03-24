@@ -8,16 +8,39 @@
         Title="InfrastructureWindow" Height="450" Width="800"
         ResizeMode="NoResize"
         WindowState="Maximized">
-    <Grid>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
         <DataGrid IsReadOnly="True"
             ItemsSource="{Binding InfrastructureItem}"
-                  SelectedItem="{Binding SelectedInfrastructure}">
+                  SelectedItem="{Binding SelectedInfrastructure}"
+                  AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}"/>
+                <DataGridTextColumn Header="Unit" Binding="{Binding Unit.Name}"/>
                 <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}"/>
             </DataGrid.Columns>
             
         </DataGrid>
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="Название" Width="200"/>
+            <TextBox Text="{Binding NameInfrastructure, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+            <TextBlock Text="Часть" Width="200"/>
+            <ComboBox
+                ItemsSource="{Binding MilitaryUnit}"
+                SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
+                DisplayMemberPath="Name"
+                Width="200"/>
+            <TextBlock Text="Год постройки" Width="200"/>
+            <TextBox Text="{Binding YearBuild}" Width="200"/>
+            <Button Command="{Binding AddItemCommand}" Width="200" Margin="0,10,0,0" Content="Добавить" />
+            <Button Command="{Binding DeleteItemCommand}" Width="200" Margin="0,10,0,0" Content="Удалить"/>
+            <Button Command="{Binding UpdateItemCommand}" Width="200" Margin="0,10,0,0" Content=" Изменить"/>
+
+
+
+        </StackPanel>
     </Grid>
 </Window>

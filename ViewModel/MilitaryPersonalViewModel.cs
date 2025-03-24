@@ -14,15 +14,19 @@ namespace MilitaryApp.ViewModel
         public ICommand AddEntry { get; }
         public ICommand DeleteEntry { get; }
         public ICommand UpdateEntry { get; }
+        public ICommand ApplyFilterCommand { get; }
+        public ICommand ResetFiltersCommand { get; }    
 
         private string _firstName;
         private string _lastName;
         private string _position;
 
         private MilitaryRank _selectedRank;
+        private MilitaryRank? _selectedRankFilter;
         private MilitaryPersonnelItem _selectedItemPersonnel;
         private Militaryspecialty _selectedSpecialty;
         private Militaryunit _selectedUnit;
+        private Militaryunit _selectedUnitId;
 
         private ObservableCollection<MilitaryRank> _rankList;
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
@@ -43,6 +47,8 @@ namespace MilitaryApp.ViewModel
             AddEntry = new RelayCommand(async () => await AddEntries());
             DeleteEntry = new RelayCommand(async () => await DeleteEnties());
             UpdateEntry = new RelayCommand(async () => await UpdateEnies());
+            ApplyFilterCommand = new RelayCommand (async () => await SearchPersonnelFilter());
+            ResetFiltersCommand = new RelayCommand(async () => await ResetFilter());
 
              InitializationFields().ConfigureAwait(false);
         }
@@ -172,6 +178,24 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedUnit));
             }
         }
+        public Militaryunit SelectedUnitId
+        {
+            get => _selectedUnitId;
+            set
+            {
+                _selectedUnitId = value;
+                OnPropertyChanged(nameof(SelectedUnitId));
+            }
+        }
+        public MilitaryRank? SelectedRankFilter
+        {
+            get => _selectedRankFilter;
+            set
+            {
+                _selectedRankFilter = value;
+                OnPropertyChanged(nameof(SelectedRankFilter));
+            }
+        }
         #endregion
         private string GetMeaningFromEnum()
         {
@@ -213,6 +237,22 @@ namespace MilitaryApp.ViewModel
             }
             await _personnelRepository.UpdateItem(SelectedItemPersonnel.PersonnelId ?? 0, FirstName, LastName, GetMeaningFromEnum(),
                 Position,SelectedSpecialties.SpecialtyId,SelectedUnit.UnitId.Value);
+            await LoadMilitaryPersonnelItem();
+        }
+        private async Task SearchPersonnelFilter()
+        {
+            if (SelectedRankFilter.ToString() == null && SelectedUnitId == null) return;
+            string? rankFilter = SelectedRankFilter?.ToString(); 
+            int? unitId = SelectedUnitId?.UnitId;
+
+            var filteredPersonnel = await _personnelRepository.SearchMilitaryPersonnel(rankFilter, unitId);
+
+            MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(filteredPersonnel);
+        }
+        private async Task ResetFilter()
+        {
+            SelectedRankFilter = null;
+            SelectedUnitId = null;
             await LoadMilitaryPersonnelItem();
         }
         protected void OnPropertyChanged(string propertyName)

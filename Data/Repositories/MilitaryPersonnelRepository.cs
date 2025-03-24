@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.DTO;
 using MilitaryApp.Models;
+using MySqlConnector;
 using System.Windows;
 using System.Windows.Documents;
 
@@ -27,6 +29,14 @@ namespace MilitaryApp.Data.Repositories
             return await _context.Database
             .SqlQueryRaw<MilitaryPersonnelItem>("CALL GetMilitaryPersonnelInfo()")
             .ToListAsync();
+        }
+        public async Task<List<MilitaryPersonnelItem>> SearchMilitaryPersonnel(string? rank, int? unitId)
+        {
+            
+            return await _context.Database.SqlQueryRaw<MilitaryPersonnelItem>(
+                "CALL GetMilitaryPersonnelReport({0},{1})", 
+                rank ?? (object)DBNull.Value,
+                unitId ?? (object)DBNull.Value).ToListAsync();
         }
         public async Task AddPersonnel(string name, string lastName, string rank, string post, int idSpeciality, int idUnit)
         {

@@ -6,57 +6,83 @@
         xmlns:local="clr-namespace:MilitaryApp.View"
         mc:Ignorable="d"
         Title="MilitaryPersonalWindow" Height="450" Width="800"
-         WindowState="Maximized"
-         ResizeMode="NoResize">
-    
-    
-    
+        WindowState="Maximized"
+        ResizeMode="NoResize">
+
+    <DockPanel>
+
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightGray" Margin="5">
+
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Width="150" Height="30" Margin="5"
+                          ItemsSource="{Binding MilitaryUnit}" 
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="UnitId"
+                         SelectedItem="{Binding SelectedUnitId, Mode=TwoWay}"
+                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По части}"/>
+
+                <ComboBox Width="150" Height="30" Margin="5"
+                          ItemsSource="{Binding RankList}" 
+                          SelectedItem="{Binding SelectedRankFilter}"
+                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По званию}"/>
+
+                <Button Content="Применить" Width="100" Height="30" Margin="5"
+                        Command="{Binding ApplyFilterCommand}"/>
+                <Button Content="Сбросить" Width="100" Height="30" Margin="5"
+                        Command="{Binding ResetFiltersCommand}"/>
+            </StackPanel>
+        </StackPanel>
+
+        
+        
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            
+
             <DataGrid AutoGenerateColumns="False" 
-          ItemsSource="{Binding MilitaryPersonnelItem}" 
-          SelectedItem="{Binding SelectedItemPersonnel}" 
-          SelectionMode="Single"
-          Grid.Column="0"
-          CanUserReorderColumns="False"
-          CanUserResizeColumns="False"
-          IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
-                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
-                <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" />
-                <DataGridTextColumn Header="Position" Binding="{Binding Position}" />
-                <DataGridTextColumn Header="Specilties" Binding="{Binding Specialties}" />
-                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <StackPanel Grid.Column="1" Margin="10" Width="200" >
-            <TextBlock Text="Имя:" />
-            <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-            <TextBlock Text="Фамииля: " />
-            <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-            <TextBlock Text="Звание: " />
-            <ComboBox ItemsSource="{Binding RankList}" 
-          SelectedItem="{Binding SelectedRank}" 
-          Width="200" />
-            <TextBlock Text="Должность: " />
-            <TextBox Text="{Binding Position, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-            <TextBlock Text="Воинская специальность: " /> 
-            <ComboBox ItemsSource="{Binding  MilitarySpecialties}" 
-            SelectedItem="{Binding SelectedSpecialties}" 
-            Width="200" DisplayMemberPath="Name"/>
-            <TextBlock Text="Воинская часть: " /> 
-            <ComboBox ItemsSource="{Binding  MilitaryUnit}" 
-                     SelectedItem="{Binding SelectedUnit, Mode=TwoWay}"
-             Width="200" DisplayMemberPath="Name"/>
-            
-            <Button Command="{Binding AddEntry}" Content="Add entry" Width="200" Margin="0,10,0,0"></Button>
-            <Button Command="{Binding DeleteEntry}" Content="Delete" Width="200" Margin="0,10,0,0"></Button>
-            <Button Command="{Binding UpdateEntry}" Content="Update" Width="200" Margin="0,10,0,0"></Button>
-        </StackPanel>
-    </Grid>
+                      ItemsSource="{Binding MilitaryPersonnelItem}" 
+                      SelectedItem="{Binding SelectedItemPersonnel}" 
+                      SelectionMode="Single"
+                      Grid.Column="0"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
+                    <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" />
+                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" />
+                    <DataGridTextColumn Header="Specilties" Binding="{Binding Specialties}" />
+                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Column="1" Margin="10" Width="200">
+                <TextBlock Text="Имя:" />
+                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+                <TextBlock Text="Фамииля: " />
+                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+                <TextBlock Text="Звание: " />
+                <ComboBox ItemsSource="{Binding RankList}" 
+                          SelectedItem="{Binding SelectedRank}" 
+                          Width="200" />
+                <TextBlock Text="Должность: " />
+                <TextBox Text="{Binding Position, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+                <TextBlock Text="Воинская специальность: " />
+                <ComboBox ItemsSource="{Binding MilitarySpecialties}" 
+                          SelectedItem="{Binding SelectedSpecialties}" 
+                          Width="200" DisplayMemberPath="Name"/>
+                <TextBlock Text="Воинская часть: " />
+                <ComboBox ItemsSource="{Binding MilitaryUnit}" 
+                          SelectedItem="{Binding SelectedUnit, Mode=TwoWay}"
+                          Width="200" DisplayMemberPath="Name"/>
+
+                <Button Command="{Binding AddEntry}" Content="Add entry" Width="200" Margin="0,10,0,0"/>
+                <Button Command="{Binding DeleteEntry}" Content="Delete" Width="200" Margin="0,10,0,0"/>
+                <Button Command="{Binding UpdateEntry}" Content="Update" Width="200" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -19,6 +19,7 @@ namespace MilitaryApp.ViewModel
         public ICommand OpenWeaponWindowCommand { get; }
         public ICommand OpenInfrastructureWindowCommand { get; }
         public ICommand ApplyFilterCommand { get; } 
+        public ICommand GetMinMaxCountunitCommand { get; }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -36,6 +37,7 @@ namespace MilitaryApp.ViewModel
         private MilitaryStructureItem _selectedParentItem;
         private MilitaryStructureItem _selectedItem;
 
+
         private ObservableCollection<Army> _armies;
         private ObservableCollection<Division> _divisions;
         private ObservableCollection<Corps> _corps;
@@ -46,6 +48,8 @@ namespace MilitaryApp.ViewModel
         private ObservableCollection<MilitaryStructureItem> _militaryStructureItems;
         private ObservableCollection<MilitaryStructureItem> _parentItems;
         private ObservableCollection<string> _structureTypes;
+        private ObservableCollection<string> _parameters;
+        private string _selectedParameter;
 
         private readonly IArmyRepository _armyRepository;
         private readonly IDivisionRepository _divisionRepository;
@@ -73,6 +77,8 @@ namespace MilitaryApp.ViewModel
             DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
             UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
             ApplyFilterCommand = new RelayCommand(async () => await ApllyFilter());
+            GetMinMaxCountunitCommand = new RelayCommand(async () => await LoadMinMaxCountUnit());
+
             OpenPersonnelWindowCommand = new RelayCommand(OpenPersonnelWindow);
             OpenEquipmentWindowCommand = new RelayCommand(OpenEquipmentWindow);
             OpenWeaponWindowCommand = new RelayCommand(OpenWeaponWindow);
@@ -81,6 +87,10 @@ namespace MilitaryApp.ViewModel
             StructureTypes = new ObservableCollection<string>
             {
                 "Армия", "Дивизия", "Корпус", "Военная часть", "Подразделение части"
+            };
+            Parameters = new ObservableCollection<string>
+            {
+                "Минимально", "Максимально"
             };
 
             ParentItems = new ObservableCollection<MilitaryStructureItem>();
@@ -91,6 +101,7 @@ namespace MilitaryApp.ViewModel
         {
             await LoadMilitaryStructureItems();
             await LoadData();
+            SelectedFilterType = "Без фильтра";
         }
         #region Properties
 
@@ -103,6 +114,26 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(MilitaryStructureItems));
             }
         }
+        public ObservableCollection<string> Parameters
+        {
+            get => _parameters;
+            set
+            {
+                _parameters = value;
+                OnPropertyChanged(nameof(Parameters));
+            }
+        }
+        public string SelectedParameter
+        {
+            get => _selectedParameter;
+            set
+            {
+                _selectedParameter = value;
+                OnPropertyChanged(nameof(SelectedParameter));
+            }
+        }
+
+
 
         public ObservableCollection<string> StructureTypes
         {
@@ -434,8 +465,16 @@ namespace MilitaryApp.ViewModel
         }
         private async Task LoadFilterMilitaryStructureItem(int? armyId, int? divisionId, int? corpsId)
         {
+
             MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(
                 await _structureRepository.GetFilterMilitaryStructure(armyId, divisionId, corpsId));
+        }
+
+        private async Task LoadMinMaxCountUnit()
+        {
+            string mode = SelectedParameter == "Максимально" ? "max" : "min";
+            MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(
+                await _structureRepository.GetMinMaxCountUnit(mode));
         }
 
         protected void OnPropertyChanged(string propertyName)

@@ -41,6 +41,11 @@ namespace MilitaryApp.Data.Repositories
                     corpsId.HasValue ? (object)corpsId.Value : DBNull.Value)
                 .ToListAsync();
         }
+        public async Task<List<MilitaryStructureItem>> GetMinMaxCountUnit(string param)
+        {
+            return await _context.Database.SqlQueryRaw<MilitaryStructureItem>(
+                "CALL GetMilitaryStructureWithUnitCount({0})", param).ToListAsync();
+        }
         public async Task<List<Army>> GetArmy()
         {
            return (await _armyRepo.GetAllAsync()).ToList();

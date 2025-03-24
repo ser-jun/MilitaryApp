@@ -10,5 +10,6 @@ namespace MilitaryApp.Data.Repositories.Interfaces
     public interface IMilitaryStructureRepository 
     {
         Task<List<MilitaryStructureItem>> GetMilitaryStructure();
+        Task<List<MilitaryStructureItem>> GetFilterMilitaryStructure(int? armyId = null, int? divisionId = null, int? corpsId = null);
     }
 }

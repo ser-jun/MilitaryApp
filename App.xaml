@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:MilitaryApp"
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
-         
+        <local:FilterTypeToVisibilityConverter x:Key="FilterTypeToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Application.Resources>
 </Application>

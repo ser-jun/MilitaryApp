@@ -31,6 +31,28 @@ namespace MilitaryApp.Data.Repositories
                 .SqlQueryRaw<MilitaryStructureItem>("CALL GetMilitaryStructure()")
                 .ToListAsync();
         }
+        public async Task<List<MilitaryStructureItem>> GetFilterMilitaryStructure(int? armyId = null, int? divisionId = null, int? corpsId = null)
+        {
+            return await _context.Database
+                .SqlQueryRaw<MilitaryStructureItem>(
+                    "CALL GetMilitaryUnitsHierarchy({0}, {1}, {2})",
+                    armyId.HasValue ? (object)armyId.Value : DBNull.Value,
+                    divisionId.HasValue ? (object)divisionId.Value : DBNull.Value,
+                    corpsId.HasValue ? (object)corpsId.Value : DBNull.Value)
+                .ToListAsync();
+        }
+        public async Task<List<Army>> GetArmy()
+        {
+           return (await _armyRepo.GetAllAsync()).ToList();
+        }
+        public async Task<List<Division>> GetDivision()
+        {
+            return (await _divisionRepo.GetAllAsync()).ToList();
+        }
+        public async Task<List<Corps>> GetCorps()
+        {
+            return (await _corpsRepo.GetAllAsync()).ToList();
+        }
 
         #region DeleteMethods
         public async Task DeleteArmy(int armyId)

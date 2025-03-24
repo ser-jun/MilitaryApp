@@ -9,72 +9,111 @@
         WindowState="Maximized"
         ResizeMode="NoResize">
 
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
+    <DockPanel>
 
-        <DataGrid AutoGenerateColumns="False" 
-                  ItemsSource="{Binding MilitaryStructureItems}" 
-                  SelectedItem="{Binding SelectedItem}" 
-                  SelectionMode="Single"
-                  Grid.Column="0"
-                  CanUserReorderColumns="False"
-                  CanUserResizeColumns="False"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-           
-                <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" />
-                <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
-                <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />
-                <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" />
-                <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightGray" Margin="5">
 
-  
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Text="Название" />
-            <TextBox Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+            <ComboBox ItemsSource="{Binding FilterTypes}" 
+                      SelectedItem="{Binding SelectedFilterType}"
+                      Width="150" Height="30" Margin="5"/>
 
-            <TextBlock Text="Тип структуры" Margin="0,10,0,0"/>
-            <ComboBox ItemsSource="{Binding StructureTypes}" 
-                      SelectedItem="{Binding SelectedStructureType}" 
-                      Width="200" />
 
-            <TextBlock Text="Родительский элемент" Margin="0,10,0,0"/>
-            <ComboBox ItemsSource="{Binding ParentItems}" 
-                      SelectedItem="{Binding SelectedParentItem}" 
-                      DisplayMemberPath="Name" 
-                      Width="200">
-                <ComboBox.Style>
-                    <Style TargetType="ComboBox">
-                        <Setter Property="IsEnabled" Value="False"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedStructureType}" Value="Дивизия">
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding SelectedStructureType}" Value="Корпус">
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding SelectedStructureType}" Value="Военная часть">
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding SelectedStructureType}" Value="Подразделение части">
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ComboBox.Style>
-            </ComboBox>
-            <Button Command="{Binding AddItemCommand}" Content="Добавить" Margin="0,10,0,0" Width="200"/>
-            <Button Command="{Binding DeleteItemCommand}" Content="Удалить" Margin="0,10,0,0" Width="200" />
-            <Button Command="{Binding UpdateItemCommand}" Content="Изменить" Margin="0,10,0,0" Width="200" />
-            <Button Command="{Binding  OpenPersonnelWindowCommand}" Content="on next page" Margin="0,20,0,0" Width="200"/>
-            <Button Command="{Binding OpenEquipmentWindowCommand}" Content="on equipment page" Margin="0,20,0,0" Width="200"></Button>
-            <Button Command="{Binding OpenWeaponWindowCommand}" Content="on weapon window" Margin="0,20,0,0" Width="200"></Button>
-            <Button Command="{Binding OpenInfrastructureWindowCommand}" Content="on infrastructure win" Width="200" Margin="0,20,0,0"/>
+            <StackPanel Orientation="Horizontal" Visibility="{Binding ShowFilterControls, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                <ComboBox Width="150" Height="30" Margin="5"
+                          ItemsSource="{Binding Armies}" 
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ArmyId"
+                          SelectedValue="{Binding SelectedArmyId}"
+                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По армии}"/>
+
+                <ComboBox Width="150" Height="30" Margin="5"
+                          ItemsSource="{Binding Divisions}" 
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="DivisionId"
+                          SelectedValue="{Binding SelectedDivisionId}"
+                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По дивизии}"/>
+
+                <ComboBox Width="150" Height="30" Margin="5"
+                          ItemsSource="{Binding Corps}" 
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="CorpsId"
+                          SelectedValue="{Binding SelectedCorpsId}"
+                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По корпусу}"/>
+
+                <Button Content="Применить" Width="100" Height="30" Margin="5"
+                        Command="{Binding ApplyFilterCommand}"/>
+            </StackPanel>
         </StackPanel>
-    </Grid>
+
+
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+          
+            <DataGrid AutoGenerateColumns="False" 
+                      ItemsSource="{Binding MilitaryStructureItems}" 
+                      SelectedItem="{Binding SelectedItem}" 
+                      SelectionMode="Single"
+                      Grid.Column="0"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" />
+                    <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
+                    <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />
+                    <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" />
+                    <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+          
+            <StackPanel Grid.Column="1" Margin="10">
+                <TextBlock Text="Название" />
+                <TextBox Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+
+                <TextBlock Text="Тип структуры" Margin="0,10,0,0"/>
+                <ComboBox ItemsSource="{Binding StructureTypes}" 
+                          SelectedItem="{Binding SelectedStructureType}" 
+                          Width="200" />
+
+                <TextBlock Text="Родительский элемент" Margin="0,10,0,0"/>
+                <ComboBox ItemsSource="{Binding ParentItems}" 
+                          SelectedItem="{Binding SelectedParentItem}" 
+                          DisplayMemberPath="Name" 
+                          Width="200">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedStructureType}" Value="Дивизия">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedStructureType}" Value="Корпус">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedStructureType}" Value="Военная часть">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedStructureType}" Value="Подразделение части">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+                <Button Command="{Binding AddItemCommand}" Content="Добавить" Margin="0,10,0,0" Width="200"/>
+                <Button Command="{Binding DeleteItemCommand}" Content="Удалить" Margin="0,10,0,0" Width="200" />
+                <Button Command="{Binding UpdateItemCommand}" Content="Изменить" Margin="0,10,0,0" Width="200" />
+                <Button Command="{Binding OpenPersonnelWindowCommand}" Content="on next page" Margin="0,10,0,0" Width="200"/>
+                <Button Command="{Binding OpenEquipmentWindowCommand}" Content="on equipment page" Margin="0,10,0,0" Width="200"/>
+                <Button Command="{Binding OpenWeaponWindowCommand}" Content="on weapon window" Margin="0,10,0,0" Width="200"/>
+                <Button Command="{Binding OpenInfrastructureWindowCommand}" Content="on infrastructure win" Width="200" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
 </Window>

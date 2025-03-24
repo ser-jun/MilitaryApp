@@ -1,6 +1,6 @@
-﻿using MilitaryApp.Data.Repositories;
-using MilitaryApp.Data.Repositories.Interfaces;
+﻿using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.DTO;
+using MilitaryApp.Models;
 using MilitaryApp.View;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -17,15 +17,32 @@ namespace MilitaryApp.ViewModel
         public ICommand OpenPersonnelWindowCommand { get; }
         public ICommand OpenEquipmentWindowCommand { get; }
         public ICommand OpenWeaponWindowCommand { get; }
-        public ICommand OpenInfrastructureWindowCommand { get; }    
+        public ICommand OpenInfrastructureWindowCommand { get; }
+        public ICommand ApplyFilterCommand { get; } 
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private string _name;
         private string _selectedStructureType;
+        private string _selectedFilterType;
+        public ObservableCollection<string> FilterTypes { get; } = new ObservableCollection<string>
+    {
+        "Без фильтра",
+        "По армии",
+        "По дивизии",
+        "По корпусу"
+    };
         private MilitaryStructureItem _selectedParentItem;
         private MilitaryStructureItem _selectedItem;
+
+        private ObservableCollection<Army> _armies;
+        private ObservableCollection<Division> _divisions;
+        private ObservableCollection<Corps> _corps;
+        private int? _selectedArmyId;
+        private int? _selectedDivisionId;
+        private int? _selectedCorpsId;
+
         private ObservableCollection<MilitaryStructureItem> _militaryStructureItems;
         private ObservableCollection<MilitaryStructureItem> _parentItems;
         private ObservableCollection<string> _structureTypes;
@@ -55,6 +72,7 @@ namespace MilitaryApp.ViewModel
             AddItemCommand = new RelayCommand(async () => await AddItem());
             DeleteItemCommand = new RelayCommand(async () => await DeleteItem());
             UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
+            ApplyFilterCommand = new RelayCommand(async () => await ApllyFilter());
             OpenPersonnelWindowCommand = new RelayCommand(OpenPersonnelWindow);
             OpenEquipmentWindowCommand = new RelayCommand(OpenEquipmentWindow);
             OpenWeaponWindowCommand = new RelayCommand(OpenWeaponWindow);
@@ -66,9 +84,14 @@ namespace MilitaryApp.ViewModel
             };
 
             ParentItems = new ObservableCollection<MilitaryStructureItem>();
-            LoadMilitaryStructureItems().ConfigureAwait(false);
+            LoadFields().ConfigureAwait(false);
         }
 
+        private async Task LoadFields()
+        {
+            await LoadMilitaryStructureItems();
+            await LoadData();
+        }
         #region Properties
 
         public ObservableCollection<MilitaryStructureItem> MilitaryStructureItems
@@ -141,7 +164,73 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedItem));
             }
         }
-
+        public string SelectedFilterType
+        {
+            get => _selectedFilterType;
+            set
+            {
+                _selectedFilterType = value;
+                OnPropertyChanged(nameof(SelectedFilterType));
+                if (value != "По армии") SelectedArmyId = null;
+                if (value != "По дивизии") SelectedDivisionId = null;
+                if (value != "По корпусу") SelectedCorpsId = null;
+            }
+        }
+        public ObservableCollection<Army> Armies
+        {
+            get => _armies;
+            set
+            {
+                _armies = value;
+                OnPropertyChanged(nameof(Armies));
+            }
+        }
+        public ObservableCollection<Division> Divisions
+        {
+            get => _divisions;
+            set
+            {
+                _divisions = value;
+                OnPropertyChanged(nameof(Divisions));
+            }
+        }
+        public ObservableCollection<Corps> Corps
+        {
+            get => _corps;
+            set
+            {
+                _corps = value;
+                OnPropertyChanged(nameof(Corps));
+            }
+        }
+        public int? SelectedArmyId
+        {
+            get => _selectedArmyId;
+            set
+            {
+                _selectedArmyId = value;
+                OnPropertyChanged(nameof(SelectedArmyId));
+            }
+        }
+        public int? SelectedDivisionId
+        {
+            get => _selectedDivisionId;
+            set
+            {
+                _selectedDivisionId = value;
+                OnPropertyChanged(nameof(SelectedDivisionId));
+            }
+        }
+        public int? SelectedCorpsId
+        {
+            get => _selectedCorpsId;
+            set
+            {
+                _selectedCorpsId = value;
+                OnPropertyChanged(nameof(SelectedCorpsId));
+            }
+        }
+        
         #endregion
 
         #region CRUD Operations
@@ -153,61 +242,67 @@ namespace MilitaryApp.ViewModel
 
             UpdateParentItems();
         }
+        private async Task LoadData()
+        {
+            Armies = new ObservableCollection<Army>(await _armyRepository.GetArmy());
+            Divisions = new ObservableCollection<Division>(await _divisionRepository.GetDivision());
+            Corps = new ObservableCollection<Corps>(await _corpsRepository.GetCorps());
+        }
 
         private async Task DeleteItem()
         {
             if (SelectedItem == null)
                 return;
 
-                switch (SelectedStructureType)
-                {
-                    case "Армия":
-                        await _armyRepository.DeleteArmy(SelectedItem.ArmyId ?? 0);
-                        break;
-                    case "Дивизия":
-                        await _divisionRepository.DeleteDivision(SelectedItem.DivisionId ?? 0);
-                        break;
-                    case "Корпус":
-                        await _corpsRepository.DeleteCorps(SelectedItem.CorpsId ?? 0);
-                        break;
-                    case "Военная часть":
-                        await _unitRepository.DeleteUnit(SelectedItem.UnitId ?? 0);
-                        break;
+            switch (SelectedStructureType)
+            {
+                case "Армия":
+                    await _armyRepository.DeleteArmy(SelectedItem.ArmyId ?? 0);
+                    break;
+                case "Дивизия":
+                    await _divisionRepository.DeleteDivision(SelectedItem.DivisionId ?? 0);
+                    break;
+                case "Корпус":
+                    await _corpsRepository.DeleteCorps(SelectedItem.CorpsId ?? 0);
+                    break;
+                case "Военная часть":
+                    await _unitRepository.DeleteUnit(SelectedItem.UnitId ?? 0);
+                    break;
                 case "Подразделение части":
                     await _subUnitRepository.DeleteSubUnit(SelectedItem.SubUnitId ?? 0);
                     break;
-                }
-                await LoadMilitaryStructureItems();
-  
+            }
+            await LoadMilitaryStructureItems();
+
         }
 
         private async Task AddItem()
         {
             if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
                 return;
-                switch (SelectedStructureType)
-                {
-                    case "Армия":
-                        await _armyRepository.AddArmy(NewItemName);
-                        break;
-                    case "Дивизия":
-                        if (SelectedParentItem?.ArmyId != null)
-                            await _divisionRepository.AddDivision(NewItemName, SelectedParentItem.ArmyId.Value);
-                        break;
-                    case "Корпус":
-                        if (SelectedParentItem?.DivisionId != null)
-                            await _corpsRepository.AddCorps(NewItemName, SelectedParentItem.DivisionId.Value);
-                        break;
-                    case "Военная часть":
-                        if (SelectedParentItem?.CorpsId != null)
-                            await _unitRepository.AddMilitaryUnit(NewItemName, SelectedParentItem.CorpsId.Value);
-                        break;
+            switch (SelectedStructureType)
+            {
+                case "Армия":
+                    await _armyRepository.AddArmy(NewItemName);
+                    break;
+                case "Дивизия":
+                    if (SelectedParentItem?.ArmyId != null)
+                        await _divisionRepository.AddDivision(NewItemName, SelectedParentItem.ArmyId.Value);
+                    break;
+                case "Корпус":
+                    if (SelectedParentItem?.DivisionId != null)
+                        await _corpsRepository.AddCorps(NewItemName, SelectedParentItem.DivisionId.Value);
+                    break;
+                case "Военная часть":
+                    if (SelectedParentItem?.CorpsId != null)
+                        await _unitRepository.AddMilitaryUnit(NewItemName, SelectedParentItem.CorpsId.Value);
+                    break;
                 case "Подразделение части":
                     if (SelectedParentItem?.UnitId != null)
                         await _subUnitRepository.AddSubUnit(NewItemName, SelectedParentItem.UnitId.Value);
                     break;
-                }
-                await LoadMilitaryStructureItems();
+            }
+            await LoadMilitaryStructureItems();
         }
 
         private async Task UpdateItem()
@@ -230,7 +325,7 @@ namespace MilitaryApp.ViewModel
                     await _unitRepository.UpdateMilitaryUnit(SelectedItem.UnitId ?? 0, NewItemName, SelectedParentItem.CorpsId ?? 0);
                     break;
                 case "Подразделение части":
-                    await _subUnitRepository.UpdateSubUnit(SelectedItem.SubUnitId ?? 0, NewItemName, SelectedParentItem.UnitId ?? 0);   
+                    await _subUnitRepository.UpdateSubUnit(SelectedItem.SubUnitId ?? 0, NewItemName, SelectedParentItem.UnitId ?? 0);
                     break;
             }
             await LoadMilitaryStructureItems();
@@ -300,14 +395,47 @@ namespace MilitaryApp.ViewModel
         private void OpenWeaponWindow()
         {
             WeaponWindow weaponWindow = new WeaponWindow();
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();  
+            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
             weaponWindow.Show();
         }
-        private void OpenInfrastructureWindow ()
+        private void OpenInfrastructureWindow()
         {
             InfrastructureWindow ifrastructureWin = new InfrastructureWindow();
             Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
-            ifrastructureWin.Show();    
+            ifrastructureWin.Show();
+        }
+
+        private async Task ApllyFilter()
+        {
+            switch (SelectedFilterType)
+            {
+                case "Без фильтра":
+                    await LoadMilitaryStructureItems();
+                    break;
+                case "По армии":
+                    if (SelectedArmyId.HasValue)
+                        await LoadFilterMilitaryStructureItem(SelectedArmyId, null, null);
+                    else
+                        MessageBox.Show("Выберите армию для фильтрации");
+                    break;
+                case "По дивизии":
+                    if (SelectedDivisionId.HasValue)
+                        await LoadFilterMilitaryStructureItem(null, SelectedDivisionId, null);
+                    else
+                        MessageBox.Show("Выберите дивизию для фильтрации");
+                    break;
+                case "По корпусу":
+                    if (SelectedCorpsId.HasValue)
+                        await LoadFilterMilitaryStructureItem(null, null, SelectedCorpsId);
+                    else
+                        MessageBox.Show("Выберите корпус для фильтрации");
+                    break;
+            }
+        }
+        private async Task LoadFilterMilitaryStructureItem(int? armyId, int? divisionId, int? corpsId)
+        {
+            MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(
+                await _structureRepository.GetFilterMilitaryStructure(armyId, divisionId, corpsId));
         }
 
         protected void OnPropertyChanged(string propertyName)

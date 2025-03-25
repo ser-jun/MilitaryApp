@@ -20,6 +20,7 @@ namespace MilitaryApp.ViewModel
         public ICommand OpenInfrastructureWindowCommand { get; }
         public ICommand ApplyFilterCommand { get; } 
         public ICommand GetMinMaxCountunitCommand { get; }
+        public ICommand ResetFiltersCommand { get; }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -29,7 +30,6 @@ namespace MilitaryApp.ViewModel
         private string _selectedFilterType;
         public ObservableCollection<string> FilterTypes { get; } = new ObservableCollection<string>
     {
-        "Без фильтра",
         "По армии",
         "По дивизии",
         "По корпусу"
@@ -78,6 +78,7 @@ namespace MilitaryApp.ViewModel
             UpdateItemCommand = new RelayCommand(async () => await UpdateItem());
             ApplyFilterCommand = new RelayCommand(async () => await ApllyFilter());
             GetMinMaxCountunitCommand = new RelayCommand(async () => await LoadMinMaxCountUnit());
+            ResetFiltersCommand = new RelayCommand(async () => await ResetFilters());   
 
             OpenPersonnelWindowCommand = new RelayCommand(OpenPersonnelWindow);
             OpenEquipmentWindowCommand = new RelayCommand(OpenEquipmentWindow);
@@ -101,7 +102,7 @@ namespace MilitaryApp.ViewModel
         {
             await LoadMilitaryStructureItems();
             await LoadData();
-            SelectedFilterType = "Без фильтра";
+            SelectedFilterType = null;
         }
         #region Properties
 
@@ -275,7 +276,7 @@ namespace MilitaryApp.ViewModel
         }
         private async Task LoadData()
         {
-            Armies = new ObservableCollection<Army>(await _armyRepository.GetArmy());
+            Armies = (new ObservableCollection<Army>(await _armyRepository.GetArmy()));
             Divisions = new ObservableCollection<Division>(await _divisionRepository.GetDivision());
             Corps = new ObservableCollection<Corps>(await _corpsRepository.GetCorps());
         }
@@ -312,7 +313,7 @@ namespace MilitaryApp.ViewModel
 
         private async Task AddItem()
         {
-            if (InputValidation.CheckAddMethodStructure(NewItemName, SelectedStructureType, out var error))
+            if (!InputValidation.CheckAddMethodStructure(NewItemName, SelectedStructureType, out var error))
             {
                 MessageBox.Show(error);
                 return;
@@ -375,45 +376,60 @@ namespace MilitaryApp.ViewModel
         #endregion
         private void UpdateParentItems()
         {
-
             switch (SelectedStructureType)
             {
                 case "Дивизия":
                     ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                        MilitaryStructureItems.Where(item => item.ArmyId.HasValue)
-                                              .Select(item => new MilitaryStructureItem
-                                              {
-                                                  ArmyId = item.ArmyId,
-                                                  ArmyName = item.ArmyName
-                                              }).ToList());
+                        MilitaryStructureItems
+                            .Where(item => item.ArmyId.HasValue)
+                            .GroupBy(item => item.ArmyId) 
+                            .Select(group => group.First()) 
+                            .Select(item => new MilitaryStructureItem
+                            {
+                                ArmyId = item.ArmyId,
+                                ArmyName = item.ArmyName
+                            }).ToList());
                     break;
+
                 case "Корпус":
                     ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                        MilitaryStructureItems.Where(item => item.DivisionId.HasValue)
-                                              .Select(item => new MilitaryStructureItem
-                                              {
-                                                  DivisionId = item.DivisionId,
-                                                  DivisionName = item.DivisionName
-                                              }).ToList());
+                        MilitaryStructureItems
+                            .Where(item => item.DivisionId.HasValue)
+                            .GroupBy(item => item.DivisionId)
+                            .Select(group => group.First())
+                            .Select(item => new MilitaryStructureItem
+                            {
+                                DivisionId = item.DivisionId,
+                                DivisionName = item.DivisionName
+                            }).ToList());
                     break;
+
                 case "Военная часть":
                     ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                        MilitaryStructureItems.Where(item => item.CorpsId.HasValue)
-                                              .Select(item => new MilitaryStructureItem
-                                              {
-                                                  CorpsId = item.CorpsId,
-                                                  CorpsName = item.CorpsName
-                                              }).ToList());
+                        MilitaryStructureItems
+                            .Where(item => item.CorpsId.HasValue)
+                            .GroupBy(item => item.CorpsId)
+                            .Select(group => group.First())
+                            .Select(item => new MilitaryStructureItem
+                            {
+                                CorpsId = item.CorpsId,
+                                CorpsName = item.CorpsName
+                            }).ToList());
                     break;
+
                 case "Подразделение части":
                     ParentItems = new ObservableCollection<MilitaryStructureItem>(
-                        MilitaryStructureItems.Where(item => item.UnitId.HasValue)
-                        .Select(item => new MilitaryStructureItem
-                        {
-                            UnitId = item.UnitId,
-                            UnitName = item.UnitName
-                        }).ToList());
+                        MilitaryStructureItems
+                            .Where(item => item.UnitId.HasValue)
+                            .GroupBy(item => item.UnitId)
+                            .Select(group => group.First())
+                            .Select(item => new MilitaryStructureItem
+                            {
+                                UnitId = item.UnitId,
+                                UnitName = item.UnitName
+                            }).ToList());
                     break;
+
                 default:
                     ParentItems = new ObservableCollection<MilitaryStructureItem>();
                     break;
@@ -449,9 +465,6 @@ namespace MilitaryApp.ViewModel
         {
             switch (SelectedFilterType)
             {
-                case "Без фильтра":
-                    await LoadMilitaryStructureItems();
-                    break;
                 case "По армии":
                     if (SelectedArmyId.HasValue)
                         await LoadFilterMilitaryStructureItem(SelectedArmyId, null, null);
@@ -485,7 +498,12 @@ namespace MilitaryApp.ViewModel
             MilitaryStructureItems = new ObservableCollection<MilitaryStructureItem>(
                 await _structureRepository.GetMinMaxCountUnit(mode));
         }
-
+        private async Task ResetFilters()
+        {
+            SelectedParameter = null;
+            SelectedFilterType = null;
+            await LoadMilitaryStructureItems();
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

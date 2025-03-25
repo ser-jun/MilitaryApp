@@ -61,12 +61,12 @@
                       CanUserResizeColumns="False"
                       IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
-                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
-                    <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" />
-                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" />
-                    <DataGridTextColumn Header="Specilties" Binding="{Binding Specialties}" />
-                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" />
+                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*"/>
+                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*"/>
+                    <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="*"/>
+                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="*"/>
+                    <DataGridTextColumn Header="Specilties" Binding="{Binding Specialties}" Width="*"/>
+                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
 

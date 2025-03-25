@@ -28,7 +28,18 @@ namespace MilitaryApp.Data.Repositories
         {
             return await _context.Database.SqlQueryRaw<EquipmentItem>("CALL GetEquipmentInfo()").ToListAsync();
         }
-      
+        public async Task<List<EquipmentItem>> GetFilterCombatEquipment(string? equipmentType, int? unitId)
+        {
+            return await _context.Database.SqlQueryRaw<EquipmentItem>("CALL GetFilterCombatEquipment({0},{1})",
+              equipmentType ?? (object)DBNull.Value,
+              unitId ?? (object)DBNull.Value).ToListAsync();
+        }
+        public async Task<List<EquipmentItem>> GetFilterEqupmentByQuantity(string typeEquipment, int quantity)
+        {
+            return await _context.Database.SqlQueryRaw<EquipmentItem>("CALL GetEquipmentsOfQuantity({0},{1})", typeEquipment, quantity).ToListAsync();
+        }
+
+
         public async Task AddEquipment(string name, string type, int unitId, int quantity)
         {
             var equipment = new Combatequipment

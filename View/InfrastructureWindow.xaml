@@ -18,9 +18,9 @@
                   SelectedItem="{Binding SelectedInfrastructure}"
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Unit" Binding="{Binding Unit.Name}"/>
-                <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Unit" Binding="{Binding Unit.Name}" Width="*"/>
+                <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}" Width="*"/>
             </DataGrid.Columns>
             
         </DataGrid>

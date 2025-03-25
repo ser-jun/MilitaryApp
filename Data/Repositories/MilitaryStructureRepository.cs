@@ -48,7 +48,8 @@ namespace MilitaryApp.Data.Repositories
         }
         public async Task<List<Army>> GetArmy()
         {
-           return (await _armyRepo.GetAllAsync()).ToList();
+             return (await _armyRepo.GetAllAsync()).ToList();
+            //return await _context.Armies.Include(a => a.ArmyId).ToListAsync();
         }
         public async Task<List<Division>> GetDivision()
         {

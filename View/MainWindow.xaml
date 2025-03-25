@@ -49,6 +49,8 @@
                       SelectedValue="{Binding SelectedParameter}"/>
             <Button Content="Максимальное количество частей" Width="100" Height="30" Margin="5"
                  Command="{Binding GetMinMaxCountunitCommand}"/>
+            <Button Content="Убрать фильтры" Width="100" Height="30" Margin="5"
+                    Command="{Binding ResetFiltersCommand}"/>
         </StackPanel>
 
 
@@ -68,11 +70,11 @@
                       CanUserResizeColumns="False"
                       IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" />
-                    <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" />
-                    <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" />
-                    <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" />
-                    <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" />
+                    <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" Width="*"/>
+                    <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" Width="*"/>
+                    <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" Width="*"/>
+                    <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" Width="*"/>
+                    <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
 

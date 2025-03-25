@@ -120,6 +120,10 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddWeapon()
         {
+            if (string.IsNullOrWhiteSpace(NameWeapon) || string.IsNullOrWhiteSpace(TypeWeapon) || Quantity >=999 || Quantity <=0)
+            {
+                MessageBox.Show("Введите корректные данные");
+            }
             await _weaponRepository.AddWeapon(SelectedMilitaryUnit.UnitId.Value, NameWeapon, TypeWeapon, Quantity);
             try
             {
@@ -133,13 +137,21 @@ namespace MilitaryApp.ViewModel
         }
         private async Task DeleteWeapon()
         {
-            if (SelectedMilitaryUnit == null) return;
-            await _weaponRepository.DeleteWeapon(SelectedWeaponItem.WeaponId);
+            if (SelectedMilitaryUnit == null)
+            {
+                MessageBox.Show("Выберите элемент для удаления");
+                return;
+            }
+                await _weaponRepository.DeleteWeapon(SelectedWeaponItem.WeaponId);
             await LoadInfoWeapon();
         }
         private async Task UpdateWeapon()
         {
-            if (SelectedWeaponItem == null) return;
+            if (SelectedWeaponItem == null)
+            {
+                MessageBox.Show("Выберите элемент для редактирования");
+                return;
+            }
             await _weaponRepository.UpdateWeapon(SelectedWeaponItem.WeaponId, SelectedMilitaryUnit.UnitId.Value, NameWeapon, TypeWeapon, Quantity);
             await LoadInfoWeapon();
         }

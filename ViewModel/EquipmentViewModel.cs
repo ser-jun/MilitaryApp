@@ -4,6 +4,7 @@ using MilitaryApp.DTO;
 using MilitaryApp.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MilitaryApp.ViewModel
@@ -113,16 +114,31 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEquipment()
         {
+            if (string.IsNullOrWhiteSpace(NameEquipment) || string.IsNullOrWhiteSpace(TypeEquipment) || Quantity <=0  || Quantity >=999)
+            {
+                MessageBox.Show("Введите корректные данные");
+                return;
+            }
            await _equipmentRepository.AddEquipment(NameEquipment, TypeEquipment, SelectedMilitaryUnit.UnitId.Value, Quantity);
             await LoadEquipmentInfo();
         }
         private async Task DeleteEquipment()
         {
+            if (SelectedEquipment == null)
+            {
+                MessageBox.Show("Выберите элемент для удаления");
+                return;
+            }
           await  _equipmentRepository.DeleteEquipment(SelectedEquipment.EquipmentId);
             await LoadEquipmentInfo();
         }
         private async Task UpdateEquipment()
         {
+            if (SelectedEquipment == null)
+            {
+                MessageBox.Show("Выберите элемент для редактирования");
+                return;
+            }
             await _equipmentRepository.UpdateEquipment(SelectedEquipment.EquipmentId, NameEquipment, TypeEquipment,
                 SelectedMilitaryUnit.UnitId.Value, Quantity);
            await LoadEquipmentInfo();

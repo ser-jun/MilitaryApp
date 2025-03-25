@@ -38,15 +38,11 @@ namespace MilitaryApp.Data.Repositories
                 rank ?? (object)DBNull.Value,
                 unitId ?? (object)DBNull.Value).ToListAsync();
         }
-        public async Task<List<MilitaryPersonnelItem>> SearchPersonnelBySpecialty(int speacialtyId, int? armyId, int?divisionId,
-            int? corpsId, int? unitId)
+        public async Task<List<MilitaryPersonnelItem>> SearchPersonnelBySpecialty(int? speacialtyId,  int? unitId)
         {
             return await _context.Database.SqlQueryRaw<MilitaryPersonnelItem>(
-                "CALL GetPersonnelBySpecialty({0},{1},{2},{3},{4})",
-                speacialtyId,
-                armyId ?? (object)DBNull.Value,
-                divisionId ?? (object)DBNull.Value,
-                corpsId ?? (object)DBNull.Value,
+                "CALL GetPersonnelBySpecialty({0},{1})",
+                speacialtyId ?? (object)DBNull.Value,
                 unitId ?? (object)DBNull.Value).ToListAsync();
         }
         public async Task AddPersonnel(string name, string lastName, string rank, string post, int idSpeciality, int idUnit)

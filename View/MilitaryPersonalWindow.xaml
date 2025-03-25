@@ -27,27 +27,18 @@
                           Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По званию}"/>
 
                 <Button Content="Применить" Width="100" Height="30" Margin="5"
-                        Command="{Binding ApplyFilterCommand}"/>
+                        Command="{Binding ApplyFilterSearchByRankCommand}"/>
                 <ComboBox Width="150" Height="30" Margin="5"
                           ItemsSource="{Binding MilitarySpecialties}"
                           DisplayMemberPath="Name"
                           SelectedItem="{Binding SelectedSpecialtyFilter}"/>
+              
                 <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding ArmyFilter}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedArmy}"/>
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding DivisionFilter}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedDivision}"/>
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding CorpsFilter}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedCorps}"/>
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding UnitFilter}"
+                          ItemsSource="{Binding MilitaryUnit}"
                           DisplayMemberPath="Name"
                           SelectedItem="{Binding SelectedUnitFilter}"/>
+                <Button Content="Применить" Width="100" Height="30" Margin="5"
+                        Command="{Binding ApplyFilterBySpecialty}"/>
                 <Button Content="Сбросить" Width="100" Height="30" Margin="5"
                         Command="{Binding ResetFiltersCommand}"/>
             </StackPanel>

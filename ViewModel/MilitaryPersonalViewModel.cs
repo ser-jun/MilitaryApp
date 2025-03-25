@@ -14,8 +14,9 @@ namespace MilitaryApp.ViewModel
         public ICommand AddEntry { get; }
         public ICommand DeleteEntry { get; }
         public ICommand UpdateEntry { get; }
-        public ICommand ApplyFilterCommand { get; }
+        public ICommand ApplyFilterSearchByRankCommand { get; }
         public ICommand ResetFiltersCommand { get; }    
+        public ICommand ApplyFilterBySpecialty { get; }
 
         private string _firstName;
         private string _lastName;
@@ -28,20 +29,12 @@ namespace MilitaryApp.ViewModel
         private Militaryunit _selectedUnit;
         private Militaryunit _selectedUnitId;
         private Militaryspecialty _selectedMilitarySpecialty;
-        private Army _selectedArmyFilter;
-        private Division _selectedDivisionFilter;
-        private Corps _selectedCorpsFilter;
         private Militaryunit _selectedUnitFilter;
 
         private ObservableCollection<MilitaryRank> _rankList;
         private ObservableCollection<Militaryspecialty> _militaryspecialties;
         private ObservableCollection<Militaryunit> _militaryUnits;
-        private ObservableCollection<Army> _armyFilter;
-        private ObservableCollection<Division> _divisionFilter;
-        private ObservableCollection<Corps> _corpsFilter;
-        private ObservableCollection<Militaryunit> _unitFilter;
 
-        
 
         public ObservableCollection<MilitaryPersonnelItem> _militaryPersonalItem;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -49,9 +42,7 @@ namespace MilitaryApp.ViewModel
         private readonly IMilitaryPersonnelRepository _personnelRepository;
         private readonly ICrudRepository<Militaryspecialty> _crudRepositoryMilitarySpelty;
         private readonly ICrudRepository<Militaryunit> _crudRepositoryMilitaryUnit;
-        private readonly ICrudRepository<Army> _crudRepositoryArmy;
-        private readonly ICrudRepository<Division> _crudRepositoryDivision;
-        private readonly ICrudRepository<Corps> _crudRepositoryCorps;
+       
         
 
         public MilitaryPersonalViewModel(IMilitaryPersonnelRepository personnelrepository, ICrudRepository<Militaryspecialty> crudRepository, ICrudRepository<Militaryunit> crudRepositoryMilitaryUnit)
@@ -62,7 +53,8 @@ namespace MilitaryApp.ViewModel
             AddEntry = new RelayCommand(async () => await AddEntries());
             DeleteEntry = new RelayCommand(async () => await DeleteEnties());
             UpdateEntry = new RelayCommand(async () => await UpdateEnies());
-            ApplyFilterCommand = new RelayCommand (async () => await SearchPersonnelFilter());
+            ApplyFilterSearchByRankCommand = new RelayCommand (async () => await SearchPersonnelByRankFilter());
+            ApplyFilterBySpecialty = new RelayCommand(async () => await SearchMilitaryPersonnelBySpecialty());
             ResetFiltersCommand = new RelayCommand(async () => await ResetFilter());
 
              InitializationFields().ConfigureAwait(false);
@@ -220,69 +212,7 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedSpecialtyFilter));
             }
         }
-        public ObservableCollection<Army> ArmyFilter
-        {
-            get => _armyFilter;
-            set
-            {
-                _armyFilter = value;
-                OnPropertyChanged(nameof(ArmyFilter));
-            }
-        }
-        public ObservableCollection<Division> DivisionFilter
-        {
-            get => _divisionFilter;
-            set
-            {
-                _divisionFilter = value;
-                OnPropertyChanged(nameof(DivisionFilter));
-            }
-        }
-        public ObservableCollection<Corps> CorpsFilter
-        {
-            get => _corpsFilter;
-            set
-            {
-                _corpsFilter = value;
-                OnPropertyChanged(nameof(CorpsFilter));
-            }
-        }
-        public ObservableCollection<Militaryunit> UnitFilter
-        {
-            get => _unitFilter;
-            set
-            {
-                _unitFilter = value;
-                OnPropertyChanged(nameof(UnitFilter));
-            }
-        }
-        public Army SelectedArmy
-        {
-            get => _selectedArmyFilter;
-            set
-            {
-                _selectedArmyFilter = value;
-                OnPropertyChanged(nameof(SelectedArmy));
-            }
-        }
-        public Division SelectedDivision
-        {
-            get => _selectedDivisionFilter;
-            set
-            {
-                _selectedDivisionFilter = value;
-                OnPropertyChanged(nameof(SelectedDivision));
-            }
-        }
-        public Corps SelectedCorps
-        {
-            get => _selectedCorpsFilter;
-            set
-            {
-                _selectedCorpsFilter = value;
-                OnPropertyChanged(nameof(SelectedCorps));
-            }
-        }
+
         public Militaryunit SelectedUnitFilter
         {
             get => _selectedUnitFilter;
@@ -304,6 +234,11 @@ namespace MilitaryApp.ViewModel
             if (Position.ToLower().Trim() == "командир части" && SelectedUnit.CommanderId != null)
             {
                 MessageBox.Show("У данной части есть командир");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(FirstName) || string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(Position))
+            {
+                MessageBox.Show("Заполните все поля");
                 return;
             }
             await _personnelRepository.AddPersonnel(FirstName, LastName,GetMeaningFromEnum(),
@@ -336,7 +271,7 @@ namespace MilitaryApp.ViewModel
                 Position,SelectedSpecialties.SpecialtyId,SelectedUnit.UnitId.Value);
             await LoadMilitaryPersonnelItem();
         }
-        private async Task SearchPersonnelFilter()
+        private async Task SearchPersonnelByRankFilter()
         {
             if (SelectedRankFilter.ToString() == null && SelectedUnitId == null) return;
             string? rankFilter = SelectedRankFilter?.ToString(); 
@@ -348,12 +283,18 @@ namespace MilitaryApp.ViewModel
         }
         private async Task SearchMilitaryPersonnelBySpecialty()
         {
-
+            if (SelectedSpecialtyFilter == null && SelectedUnitFilter == null) return;
+            int? specialtyId = SelectedSpecialtyFilter?.SpecialtyId;
+            int? unitId = SelectedUnitFilter?.UnitId;
+            var filteredBySpecialtyPersonnel = await _personnelRepository.SearchPersonnelBySpecialty(specialtyId, unitId);
+            MilitaryPersonnelItem = new ObservableCollection<MilitaryPersonnelItem>(filteredBySpecialtyPersonnel);
         }
         private async Task ResetFilter()
         {
             SelectedRankFilter = null;
             SelectedUnitId = null;
+            SelectedSpecialtyFilter = null;
+            SelectedUnitFilter = null;
             await LoadMilitaryPersonnelItem();
         }
         protected void OnPropertyChanged(string propertyName)

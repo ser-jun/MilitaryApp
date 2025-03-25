@@ -18,6 +18,10 @@ namespace MilitaryApp.ViewModel
         public ICommand AddEntry { get; }
         public ICommand DeleteEntry { get; }
         public ICommand UpdateEntry { get; }
+        public ICommand ApplyFilterByTypeOrUnitCommand { get; }
+        public ICommand ResetFiltersCommand { get; }
+
+
         private readonly IWeaponRepository _weaponRepository;
         private readonly ICrudRepository<Militaryunit> _militaryUnitRepository;
 
@@ -25,11 +29,15 @@ namespace MilitaryApp.ViewModel
         private string _nameweapon;
         private string _typeWeapon;
 
-        public Militaryunit _selectedMilitaryUnit;
-        public WeaponItem _selectedWeaponItem;
+        private Militaryunit _selectedMilitaryUnit;
+        private WeaponItem _selectedWeaponItem;
+        private WeaponItem _selectedWeaponType;
+        private Militaryunit _selectedFilterMilitaryUnit;
+        private string _nameWeaponSearch;
 
-        public ObservableCollection<Militaryunit> _militaryUnits;
-        public ObservableCollection<WeaponItem> _weaponItem;
+        private ObservableCollection<Militaryunit> _militaryUnits;
+        private ObservableCollection<WeaponItem> _weaponItem;
+        private ObservableCollection<WeaponItem> _weaponTypes;
         public event PropertyChangedEventHandler? PropertyChanged;
         public WeaponViewModel(IWeaponRepository weaponRepository, ICrudRepository<Militaryunit> militaryUnitRepository)
         {
@@ -37,7 +45,9 @@ namespace MilitaryApp.ViewModel
             _militaryUnitRepository = militaryUnitRepository;
             AddEntry = new RelayCommand(async () => await AddWeapon());
             DeleteEntry = new RelayCommand(async () => await DeleteWeapon());
-            UpdateEntry = new RelayCommand(async () => await UpdateWeapon());   
+            UpdateEntry = new RelayCommand(async () => await UpdateWeapon());
+            ApplyFilterByTypeOrUnitCommand =new RelayCommand (async () => await GetWeaponsFilteredByTypeOrUnit());
+            ResetFiltersCommand =new RelayCommand(async () => await ResetFilters());
             InitializeField().ConfigureAwait(false);
         }
 
@@ -104,6 +114,43 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedMilitaryUnit));
             }
         }
+        public WeaponItem SelectedWeaponType
+        {
+            get => _selectedWeaponType;
+            set
+            {
+                _selectedWeaponType = value;
+                OnPropertyChanged(nameof(SelectedWeaponType));
+            }
+        }
+        public Militaryunit SelectedFilterMilitaryUnit
+        {
+            get => _selectedFilterMilitaryUnit;
+            set
+            {
+                _selectedFilterMilitaryUnit= value;
+                OnPropertyChanged(nameof(SelectedFilterMilitaryUnit));
+            }
+        }
+        public ObservableCollection<WeaponItem> WeaponTypes
+        {
+            get => _weaponTypes;
+            set
+            {
+                _weaponTypes = value;
+                OnPropertyChanged(nameof(WeaponTypes));
+            }
+        }
+        public string NameWeaponSearch
+        {
+            get => _nameWeaponSearch;
+            set
+            {
+                _nameWeaponSearch = value;
+                OnPropertyChanged(nameof(NameWeaponSearch));
+                _ = SearchWeaponByName();
+            }
+        }
         private async Task InitializeField()
         {
             await InitializeMiltaryUnitsList();
@@ -116,7 +163,14 @@ namespace MilitaryApp.ViewModel
         }
         private async Task LoadInfoWeapon()
         {
-            WeaponItem = new ObservableCollection<WeaponItem>(await _weaponRepository.GetWeaponInfoAsync());
+            var data = await _weaponRepository.GetWeaponInfoAsync();
+            WeaponItem = new ObservableCollection<WeaponItem>(data);
+
+            WeaponTypes = new ObservableCollection<WeaponItem>(
+                data.GroupBy(d =>d.TypeWeapon)
+                .Select(e =>e.First())
+                .OrderBy(g =>g.TypeWeapon));
+
         }
         private async Task AddWeapon()
         {
@@ -155,6 +209,29 @@ namespace MilitaryApp.ViewModel
             }
             await _weaponRepository.UpdateWeapon(SelectedWeaponItem.WeaponId, SelectedMilitaryUnit.UnitId.Value, NameWeapon, TypeWeapon, Quantity);
             await LoadInfoWeapon();
+        }
+        private async Task GetWeaponsFilteredByTypeOrUnit()
+        {
+            string? typeOfWeapon = SelectedWeaponType?.TypeWeapon;
+            int? unitId = SelectedFilterMilitaryUnit?.UnitId;   
+            var data  = await _weaponRepository.GetWeaponByTypeOrUnit(typeOfWeapon, unitId);
+            WeaponItem = new ObservableCollection<WeaponItem>(data);
+        }
+        private async Task ResetFilters()
+        {
+            SelectedWeaponType = null;
+            SelectedFilterMilitaryUnit = null;
+            await LoadInfoWeapon();
+        }
+        private async Task SearchWeaponByName()
+        {
+            if (NameWeaponSearch == null)
+            {
+                await LoadInfoWeapon();
+                return;
+            }
+            var data = await _weaponRepository.SearchWeapon(NameWeaponSearch);
+            WeaponItem = new ObservableCollection<WeaponItem>(data);
         }
         protected void OnPropertyChanged(string propertyName)
         {

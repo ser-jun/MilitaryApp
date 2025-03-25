@@ -33,8 +33,10 @@
                  DisplayMemberPath="TypeEquipment"
                  SelectedValuePath="EquipmentId"/>
 
-            <TextBox Text="{Binding MinimalQuantityEquipments, UpdateSourceTrigger=PropertyChanged}"/>
-            
+            <TextBox Text="{Binding MinimalQuantityEquipments, UpdateSourceTrigger=PropertyChanged}" Width="150" Height="30" Margin="5"/>
+
+            <Button Content="Применить" Width="120" Height="30" Margin="5"
+                    Command="{Binding ApplyFilterByQuantityCommand}"/>
             <Button Content="Сбросить фильтры" Width="120" Height="30" Margin="5"
              Command="{Binding ResetFiltersCommand}"/>
 

@@ -14,6 +14,7 @@ namespace MilitaryApp.ViewModel
         public ICommand DeleteItem { get; }
         public ICommand UpdateItem { get; }
         public ICommand ApplyFilterByTypeOrUnitCommand { get; } 
+        public ICommand ApplyFilterByQuantityCommand { get; }
         public ICommand ResetFiltersCommand { get; }
 
         private string _nameEquipment;
@@ -27,6 +28,7 @@ namespace MilitaryApp.ViewModel
         private Militaryunit _selectedMilitaryUnit;
         private Militaryunit _selectedFilterMilitaryUnit;
         private EquipmentItem _selectedEquipmentType;
+        private int _minimalQuantityEquipments;
 
         public ObservableCollection<EquipmentItem> _equipmentTypes;
         private ObservableCollection<EquipmentItem> _equipmentItems;
@@ -39,7 +41,8 @@ namespace MilitaryApp.ViewModel
             AddItem = new RelayCommand(async () => await AddEquipment());
             DeleteItem = new RelayCommand(async () => await DeleteEquipment());
             UpdateItem = new RelayCommand(async () => await UpdateEquipment());
-            ApplyFilterByTypeOrUnitCommand = new RelayCommand(async () => await GetFilterByTypeOrUNitEquipment());
+            ApplyFilterByTypeOrUnitCommand = new RelayCommand(async () => await GetEquipmentsFilteredByTypeOrUnit());
+            ApplyFilterByQuantityCommand = new RelayCommand(async () => await GetEquipmentsFilteredByQuantity());   
             ResetFiltersCommand = new RelayCommand(async  () => await ResetFilters());  
 
             InitiliazeFileds().ConfigureAwait(false);
@@ -134,6 +137,15 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedEquipmentType));
             }
         }
+        public int MinimalQuantityEquipments
+        {
+            get => _minimalQuantityEquipments;
+            set
+            {
+                _minimalQuantityEquipments = value;
+                OnPropertyChanged(nameof(MinimalQuantityEquipments));
+            }
+        }
 
         private async Task InitiliazeFileds()
         {
@@ -186,7 +198,7 @@ namespace MilitaryApp.ViewModel
             .Select(g => g.First())
             .OrderBy(e => e.TypeEquipment));
         }
-        private async Task GetFilterByTypeOrUNitEquipment()
+        private async Task GetEquipmentsFilteredByTypeOrUnit()
         {
             if (SelectedEquipmentType == null && SelectedFilterMilitaryUnit == null) return;
             string? type = SelectedEquipmentType?.TypeEquipment;
@@ -194,10 +206,18 @@ namespace MilitaryApp.ViewModel
             var data = await _equipmentRepository.GetFilterCombatEquipment(type, unitId);
             EquipmentItem = new ObservableCollection<EquipmentItem>(data);
         }
+        private async Task GetEquipmentsFilteredByQuantity()
+        {
+            string type = SelectedEquipmentType?.TypeEquipment;
+            int minimalQuantity = MinimalQuantityEquipments;
+            var data = await _equipmentRepository.GetFilterEqupmentByQuantity(type, minimalQuantity);
+            EquipmentItem = new ObservableCollection<EquipmentItem>(data);
+        }
         private async Task ResetFilters()
         {
             SelectedEquipmentType = null;
             SelectedFilterMilitaryUnit = null;
+            MinimalQuantityEquipments = 0;
             await LoadEquipmentInfo();  
         }
         protected void OnPropertyChanged(string propertyName)

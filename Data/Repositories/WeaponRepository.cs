@@ -25,6 +25,16 @@ namespace MilitaryApp.Data.Repositories
         {
             return await _context.Database.SqlQueryRaw<WeaponItem>("CALL GetWeaponInfo()").ToListAsync();
         }
+        public async Task<List<WeaponItem>> GetWeaponByTypeOrUnit(string? weaponType, int? unitId )
+        {
+            return await _context.Database.SqlQueryRaw<WeaponItem>("CALL FindWeaponsByTypeOrUnit({0},{1})",
+                weaponType ?? (object)DBNull.Value,
+                unitId ?? (object)DBNull.Value).ToListAsync();
+        }
+        public async Task<List<WeaponItem>> SearchWeapon(string nameWeapon)
+        {
+            return await _context.Database.SqlQueryRaw<WeaponItem>("CALL SearchWeaponsByName({0})", nameWeapon).ToListAsync();
+        }
         public async Task AddWeapon(int unitId, string name, string type, int quantity)
         {
             var weapon = new Weapon

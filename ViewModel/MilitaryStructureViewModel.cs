@@ -282,8 +282,11 @@ namespace MilitaryApp.ViewModel
 
         private async Task DeleteItem()
         {
-            if (SelectedItem == null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedItem, out var error))
+            {
+                MessageBox.Show(error);
                 return;
+            }
 
             switch (SelectedStructureType)
             {
@@ -309,8 +312,11 @@ namespace MilitaryApp.ViewModel
 
         private async Task AddItem()
         {
-            if (string.IsNullOrEmpty(NewItemName) || string.IsNullOrEmpty(SelectedStructureType))
+            if (InputValidation.CheckAddMethodStructure(NewItemName, SelectedStructureType, out var error))
+            {
+                MessageBox.Show(error);
                 return;
+            }
             switch (SelectedStructureType)
             {
                 case "Армия":
@@ -338,8 +344,11 @@ namespace MilitaryApp.ViewModel
 
         private async Task UpdateItem()
         {
-            if (SelectedItem == null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedItem, out var error))
+            {
+                MessageBox.Show(error);
                 return;
+            }
 
             switch (SelectedStructureType)
             {

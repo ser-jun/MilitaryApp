@@ -231,14 +231,14 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEntries()
         {
-            if (Position.ToLower().Trim() == "командир части" && SelectedUnit.CommanderId != null)
+            if (!InputValidation.CheckCommanderUnit(Position, SelectedUnit.CommanderId.Value, out var error))
             {
-                MessageBox.Show("У данной части есть командир");
+                MessageBox.Show(error);
                 return;
             }
-            if (string.IsNullOrWhiteSpace(FirstName) || string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(Position))
+            if (!InputValidation.CheckAddMethodPersonnel(FirstName, LastName, Position, out var errorMessage))
             {
-                MessageBox.Show("Заполните все поля");
+                MessageBox.Show(errorMessage);
                 return;
             }
             await _personnelRepository.AddPersonnel(FirstName, LastName,GetMeaningFromEnum(),
@@ -252,9 +252,9 @@ namespace MilitaryApp.ViewModel
         }
         private async Task DeleteEnties()
         {
-            if (SelectedItemPersonnel == null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedItemPersonnel, out var error))
             {
-                MessageBox.Show("Выберите запись которую хотите удалить");
+                MessageBox.Show(error);
                 return;
             }
             await _personnelRepository.DeletePersonnel(SelectedItemPersonnel.PersonnelId ?? 0);
@@ -262,9 +262,9 @@ namespace MilitaryApp.ViewModel
         }
         private async Task UpdateEnies()
         {
-            if (SelectedItemPersonnel== null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedItemPersonnel, out var error))
             {
-                MessageBox.Show("Выберите запись которую хотите редактировать");
+                MessageBox.Show(error);
                 return;
             }
             await _personnelRepository.UpdateItem(SelectedItemPersonnel.PersonnelId ?? 0, FirstName, LastName, GetMeaningFromEnum(),

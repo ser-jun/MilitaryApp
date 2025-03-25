@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.Models;
@@ -112,20 +113,31 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddInfrastructure()
         {
-            if (SelectedMilitaryUnit == null) return;
-
+            if (!InputValidation.ValidationAddMethodForInfrastructure(NameInfrastructure, YearBuild, out var error))
+            {
+                MessageBox.Show(error);
+                return;
+            }
             await _infrastructureRepository.AddInfrastructureItem(NameInfrastructure, SelectedMilitaryUnit.UnitId.Value, YearBuild);
             await GetInfrastructureInfo();
         }
         private async Task DeleteIfrastructure()
         {
-            if (SelectedInfrastructure == null) return;
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedInfrastructure, out var error))
+            {
+                MessageBox.Show(error);
+                return;
+            }
             await _infrastructureRepository.DeleteInfrastructureItem(SelectedInfrastructure.BuildingId);
             await GetInfrastructureInfo();
         }
         private async Task UpdateInfrastructure()
         {
-            if (SelectedInfrastructure == null) return;
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedInfrastructure, out var error))
+            {
+                MessageBox.Show(error);
+                return;
+            }
             await _infrastructureRepository.UpdateInfrastructureItem(SelectedInfrastructure.BuildingId, NameInfrastructure, 
                 SelectedMilitaryUnit.UnitId.Value, YearBuild);
             await GetInfrastructureInfo();

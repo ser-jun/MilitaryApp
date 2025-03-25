@@ -114,9 +114,9 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEquipment()
         {
-            if (string.IsNullOrWhiteSpace(NameEquipment) || string.IsNullOrWhiteSpace(TypeEquipment) || Quantity <=0  || Quantity >=999)
+            if (InputValidation.ValidationAddMethod(NameEquipment,TypeEquipment, Quantity, out var error))
             {
-                MessageBox.Show("Введите корректные данные");
+                MessageBox.Show(error);
                 return;
             }
            await _equipmentRepository.AddEquipment(NameEquipment, TypeEquipment, SelectedMilitaryUnit.UnitId.Value, Quantity);
@@ -124,19 +124,19 @@ namespace MilitaryApp.ViewModel
         }
         private async Task DeleteEquipment()
         {
-            if (SelectedEquipment == null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedEquipment, out var error))
             {
-                MessageBox.Show("Выберите элемент для удаления");
+                MessageBox.Show(error);
                 return;
             }
-          await  _equipmentRepository.DeleteEquipment(SelectedEquipment.EquipmentId);
+            await  _equipmentRepository.DeleteEquipment(SelectedEquipment.EquipmentId);
             await LoadEquipmentInfo();
         }
         private async Task UpdateEquipment()
         {
-            if (SelectedEquipment == null)
+            if (!InputValidation.ValidationUpdateDeleteMethod(SelectedEquipment, out var error))
             {
-                MessageBox.Show("Выберите элемент для редактирования");
+                MessageBox.Show(error);
                 return;
             }
             await _equipmentRepository.UpdateEquipment(SelectedEquipment.EquipmentId, NameEquipment, TypeEquipment,

@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
+using MilitaryApp.DTO;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -19,15 +20,16 @@ namespace MilitaryApp.Data.Repositories
             _infrastructureCrud = new BaseCrudAbstract<Infrastructure>(context);
         }
 
-        public async Task<List<Infrastructure>> LoadInfrastructureInfo()
+        public async Task<List<InfrastructureItem>> LoadInfrastructureInfo()
         {
-            return await _context.Infrastructures
-                .Include(i => i.Unit) 
-                .ToListAsync();
+            //return await _context.Infrastructures
+            //    .Include(i => i.Unit) 
+            //    .ToListAsync();
+            return await _context.Database.SqlQueryRaw<InfrastructureItem>("CALL GetInfrastructureInfo()").ToListAsync();
         }
-        public async Task<List<Infrastructure>> GetBuildingsByUnitOrName(int? unitId, string? buildingName)
+        public async Task<List<InfrastructureItem>> GetBuildingsByUnitOrName(int? unitId, string? buildingName)
         {
-            return await _context.Database.SqlQueryRaw<Infrastructure>("CALL GetBuildingsByUnitAndName({0},{1})",
+            return await _context.Database.SqlQueryRaw<InfrastructureItem>("CALL GetBuildingsByUnitAndName({0},{1})",
                 unitId ?? (object)DBNull.Value,
                 buildingName ?? (object)DBNull.Value).ToListAsync();
         }

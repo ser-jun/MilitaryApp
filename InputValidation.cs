@@ -6,7 +6,7 @@
         {
             if (selecteItem == null)
             {
-                errormessage = "Выберите элемент для обновления";
+                errormessage = "Выберите элемент";
                 return false;
             }
             errormessage = string.Empty;

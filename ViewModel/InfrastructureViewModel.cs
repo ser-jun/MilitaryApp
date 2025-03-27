@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.Models;
+using MilitaryApp.DTO;
 
 namespace MilitaryApp.ViewModel
 {
@@ -28,9 +29,9 @@ namespace MilitaryApp.ViewModel
         private int _year;
 
         private Militaryunit _selectedMilitaryUnit;
-        private ObservableCollection<Infrastructure> _infrastructureItem;
+        private ObservableCollection<InfrastructureItem> _infrastructureItem;
         private ObservableCollection<Militaryunit> _militaryUnit;
-        private Infrastructure _selectedInfrastructure;
+        private InfrastructureItem _selectedInfrastructure;
         private Militaryunit _selectedFilterMilitaryUnit;
         private string _nameBuildingSearch;
         public InfrastructureViewModel(IInfrastructureRepository ifrastructureRepository, ICrudRepository<Militaryunit> militaryUnitCrud)
@@ -48,7 +49,7 @@ namespace MilitaryApp.ViewModel
             await LoadMilitaryUnitList();
         }
 
-        public ObservableCollection<Infrastructure> InfrastructureItem
+        public ObservableCollection<InfrastructureItem> InfrastructureItem
         {
             get => _infrastructureItem;
             set
@@ -57,7 +58,7 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(InfrastructureItem));
             }
         }
-        public Infrastructure SelectedInfrastructure
+        public InfrastructureItem SelectedInfrastructure
         {
             get => _selectedInfrastructure;
             set
@@ -131,7 +132,7 @@ namespace MilitaryApp.ViewModel
         private async Task GetInfrastructureInfo()
         {
             var data = await _infrastructureRepository.LoadInfrastructureInfo();
-            InfrastructureItem = new ObservableCollection<Infrastructure>(data);
+            InfrastructureItem = new ObservableCollection<InfrastructureItem>(data);
         }
         private async Task SearchBuildByNameOrUnit()
         {
@@ -139,11 +140,11 @@ namespace MilitaryApp.ViewModel
             {
 
                 var data = await _infrastructureRepository.GetBuildingsByUnitOrName(SelectedFilterMilitaryUnit?.UnitId, NameBuildingSearch);
-                InfrastructureItem = new ObservableCollection<Infrastructure>(data);
+                InfrastructureItem = new ObservableCollection<InfrastructureItem>(data);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}");
+                MessageBox.Show($"{ex.Message}{ex.StackTrace}");
             }
         }
         private async Task LoadMilitaryUnitList()

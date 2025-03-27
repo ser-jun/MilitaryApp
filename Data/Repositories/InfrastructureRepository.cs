@@ -25,6 +25,12 @@ namespace MilitaryApp.Data.Repositories
                 .Include(i => i.Unit) 
                 .ToListAsync();
         }
+        public async Task<List<Infrastructure>> GetBuildingsByUnitOrName(int? unitId, string? buildingName)
+        {
+            return await _context.Database.SqlQueryRaw<Infrastructure>("CALL GetBuildingsByUnitAndName({0},{1})",
+                unitId ?? (object)DBNull.Value,
+                buildingName ?? (object)DBNull.Value).ToListAsync();
+        }
         public async Task AddInfrastructureItem(string name, int unitId, int yearBuild)
         {
             var infrastructure = new Infrastructure

@@ -18,6 +18,9 @@ namespace MilitaryApp.ViewModel
         public ICommand AddItemCommand { get; }
         public ICommand DeleteItemCommand { get; }
         public ICommand UpdateItemCommand { get; }
+        public ICommand ApplyFilterByNameOrUnitCommand { get; } 
+        public ICommand ResetFiltersCommand { get; }
+
         private IInfrastructureRepository _infrastructureRepository;
         private ICrudRepository<Militaryunit> _militaryUnitCrud;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -28,6 +31,8 @@ namespace MilitaryApp.ViewModel
         private ObservableCollection<Infrastructure> _infrastructureItem;
         private ObservableCollection<Militaryunit> _militaryUnit;
         private Infrastructure _selectedInfrastructure;
+        private Militaryunit _selectedFilterMilitaryUnit;
+        private string _nameBuildingSearch;
         public InfrastructureViewModel(IInfrastructureRepository ifrastructureRepository, ICrudRepository<Militaryunit> militaryUnitCrud)
         {
             _infrastructureRepository = ifrastructureRepository;
@@ -100,11 +105,46 @@ namespace MilitaryApp.ViewModel
             }
         }
 
+        public Militaryunit SelectedFilterMilitaryUnit
+        {
+            get => _selectedFilterMilitaryUnit;
+            set
+            {
+                _selectedFilterMilitaryUnit= value;
+                OnPropertyChanged(nameof(SelectedFilterMilitaryUnit));
+                _ = SearchBuildByNameOrUnit();
+            }
+        }
+        public string NameBuildingSearch
+        {
+            get => _nameBuildingSearch;
+            set
+            {
+                _nameBuildingSearch = value;
+                OnPropertyChanged(nameof(NameBuildingSearch));
+                _ = SearchBuildByNameOrUnit();
+            }
+
+        }
+
 
         private async Task GetInfrastructureInfo()
         {
             var data = await _infrastructureRepository.LoadInfrastructureInfo();
             InfrastructureItem = new ObservableCollection<Infrastructure>(data);
+        }
+        private async Task SearchBuildByNameOrUnit()
+        {
+            try
+            {
+
+                var data = await _infrastructureRepository.GetBuildingsByUnitOrName(SelectedFilterMilitaryUnit?.UnitId, NameBuildingSearch);
+                InfrastructureItem = new ObservableCollection<Infrastructure>(data);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}");
+            }
         }
         private async Task LoadMilitaryUnitList()
         {

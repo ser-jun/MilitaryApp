@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MilitaryApp.Data.Repositories
 {
@@ -34,6 +35,13 @@ namespace MilitaryApp.Data.Repositories
         public async Task<List<WeaponItem>> SearchWeapon(string nameWeapon)
         {
             return await _context.Database.SqlQueryRaw<WeaponItem>("CALL SearchWeaponsByName({0})", nameWeapon).ToListAsync();
+        }
+        public async Task<List<WeaponItem>> FilterWeaponByQuatity (int quantity, int? unitId)
+        {
+      
+            return await _context.Database.SqlQueryRaw<WeaponItem>("CALL GetWeaponsByQuantity({0},{1})", quantity,
+                unitId ?? (object)DBNull.Value).ToListAsync();
+   
         }
         public async Task AddWeapon(int unitId, string name, string type, int quantity)
         {

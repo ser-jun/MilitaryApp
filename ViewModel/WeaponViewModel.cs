@@ -34,6 +34,7 @@ namespace MilitaryApp.ViewModel
         private WeaponItem _selectedWeaponType;
         private Militaryunit _selectedFilterMilitaryUnit;
         private string _nameWeaponSearch;
+        private int _minimalQuantity;
 
         private ObservableCollection<Militaryunit> _militaryUnits;
         private ObservableCollection<WeaponItem> _weaponItem;
@@ -151,6 +152,16 @@ namespace MilitaryApp.ViewModel
                 _ = SearchWeaponByName();
             }
         }
+        public int MinimalQuantity
+        {
+            get => _minimalQuantity;
+            set
+            {
+                _minimalQuantity = value;
+                OnPropertyChanged(nameof(MinimalQuantity));
+                _ = FilterWeaponByMinimalQuantity();
+            }
+        }
         private async Task InitializeField()
         {
             await InitializeMiltaryUnitsList();
@@ -221,6 +232,7 @@ namespace MilitaryApp.ViewModel
         {
             SelectedWeaponType = null;
             SelectedFilterMilitaryUnit = null;
+            //NameWeaponSearch = null;
             await LoadInfoWeapon();
         }
         private async Task SearchWeaponByName()
@@ -233,6 +245,22 @@ namespace MilitaryApp.ViewModel
             var data = await _weaponRepository.SearchWeapon(NameWeaponSearch);
             WeaponItem = new ObservableCollection<WeaponItem>(data);
         }
+        private async Task FilterWeaponByMinimalQuantity()
+        {
+            if (MinimalQuantity ==null)
+            {
+                await LoadInfoWeapon();
+                return;
+            }
+            try { 
+                var data = await _weaponRepository.FilterWeaponByQuatity(MinimalQuantity, SelectedFilterMilitaryUnit?.UnitId);
+            WeaponItem = new ObservableCollection<WeaponItem>(data);
+        }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.StackTrace);
+            }
+}
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

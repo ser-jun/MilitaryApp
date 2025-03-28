@@ -19,7 +19,6 @@ namespace MilitaryApp.ViewModel
         public ICommand AddItemCommand { get; }
         public ICommand DeleteItemCommand { get; }
         public ICommand UpdateItemCommand { get; }
-        public ICommand ApplyFilterByNameOrUnitCommand { get; } 
         public ICommand ResetFiltersCommand { get; }
 
         private IInfrastructureRepository _infrastructureRepository;
@@ -41,6 +40,7 @@ namespace MilitaryApp.ViewModel
             AddItemCommand = new RelayCommand(async () => await AddInfrastructure());
             DeleteItemCommand = new RelayCommand(async () => await DeleteIfrastructure());
             UpdateItemCommand = new RelayCommand(async () => await UpdateInfrastructure());
+            ResetFiltersCommand = new RelayCommand(async () => await ResetFilters());
             LoadData().ConfigureAwait(false);
         }
         private async Task LoadData()
@@ -138,15 +138,17 @@ namespace MilitaryApp.ViewModel
         {
             try
             {
+                
 
                 var data = await _infrastructureRepository.GetBuildingsByUnitOrName(SelectedFilterMilitaryUnit?.UnitId, NameBuildingSearch);
                 InfrastructureItem = new ObservableCollection<InfrastructureItem>(data);
-            }
+                
+        }
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}{ex.StackTrace}");
             }
-        }
+}
         private async Task LoadMilitaryUnitList()
         {
             MilitaryUnit = new ObservableCollection<Militaryunit>(await _militaryUnitCrud.GetAllAsync());
@@ -181,6 +183,12 @@ namespace MilitaryApp.ViewModel
             }
             await _infrastructureRepository.UpdateInfrastructureItem(SelectedInfrastructure.BuildingId, NameInfrastructure, 
                 SelectedMilitaryUnit.UnitId.Value, YearBuild);
+            await GetInfrastructureInfo();
+        }
+        private async Task ResetFilters()
+        {
+            //SelectedFilterMilitaryUnit = null;
+            //NameBuildingSearch = null;
             await GetInfrastructureInfo();
         }
         protected void OnPropertyChanged(string propertyName)

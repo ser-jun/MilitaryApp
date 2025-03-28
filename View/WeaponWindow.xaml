@@ -23,6 +23,7 @@
 
             <Button Content="Применить фильтр" Width="120" Height="30" Margin="5"
                     Command="{Binding ApplyFilterByTypeOrUnitCommand}"/>
+            <TextBox Width="150" Height="30" Margin="5" Text="{Binding MinimalQuantity, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBox Width="150" Height="30" Margin="5" Text="{Binding NameWeaponSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Button Content="Сбросить фильтры" Width="120" Height="30" Margin="5"

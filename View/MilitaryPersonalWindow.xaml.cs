@@ -34,5 +34,6 @@ namespace MilitaryApp.View
             ICrudRepository<Militaryunit> militaryUnitRepository= new BaseCrudAbstract<Militaryunit>(context);
             DataContext = new MilitaryPersonalViewModel(militarySpeltiesRepository, crudRepository, militaryUnitRepository);
         }
+
     }
 }

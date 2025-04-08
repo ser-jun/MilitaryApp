@@ -32,7 +32,7 @@
             errorMessage = string.Empty;
             return true;
         }
-        public static bool CheckCommanderUnit(string position, int unitId, out string errorMessage)
+        public static bool CheckCommanderUnit(string position, int? unitId, out string errorMessage)
         {
             if (position.Trim().ToLower() == "командир части" && unitId != null)
             {

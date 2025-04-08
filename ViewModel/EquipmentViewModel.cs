@@ -16,6 +16,7 @@ namespace MilitaryApp.ViewModel
         public ICommand ApplyFilterByTypeOrUnitCommand { get; } 
         public ICommand ApplyFilterByQuantityCommand { get; }
         public ICommand ResetFiltersCommand { get; }
+        public ICommand NavigateToMainPageCommand { get; }
 
         private string _nameEquipment;
         private string _typeEquipment;
@@ -43,7 +44,8 @@ namespace MilitaryApp.ViewModel
             UpdateItem = new RelayCommand(async () => await UpdateEquipment());
             ApplyFilterByTypeOrUnitCommand = new RelayCommand(async () => await GetEquipmentsFilteredByTypeOrUnit());
             ApplyFilterByQuantityCommand = new RelayCommand(async () => await GetEquipmentsFilteredByQuantity());   
-            ResetFiltersCommand = new RelayCommand(async  () => await ResetFilters());  
+            ResetFiltersCommand = new RelayCommand(async  () => await ResetFilters());
+            NavigateToMainPageCommand = new RelayCommand(NavigateToMainPage);
 
             InitiliazeFileds().ConfigureAwait(false);
         }
@@ -62,6 +64,7 @@ namespace MilitaryApp.ViewModel
             set
             {
                 _selectedEquipment = value;
+                FillFields();
                 OnPropertyChanged(nameof(SelectedEquipment));
             }
         }
@@ -159,7 +162,7 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEquipment()
         {
-            if (InputValidation.ValidationAddMethod(NameEquipment, TypeEquipment, Quantity, out var error))
+            if (!InputValidation.ValidationAddMethod(NameEquipment, TypeEquipment, Quantity, out var error))
             {
                 MessageBox.Show(error);
                 return;
@@ -218,7 +221,26 @@ namespace MilitaryApp.ViewModel
             SelectedEquipmentType = null;
             SelectedFilterMilitaryUnit = null;
             MinimalQuantityEquipments = 0;
+            ClearFields();
             await LoadEquipmentInfo();  
+        }
+        private void NavigateToMainPage()
+        {
+            NavigationService.NavigateTo<MainWindow>();
+        }
+        private void FillFields()
+        {
+            NameEquipment = SelectedEquipment.NameEquipment;
+            TypeEquipment = SelectedEquipment.TypeEquipment;
+            Quantity = SelectedEquipment.Quantity;
+            SelectedMilitaryUnit = MilitaryUnit.FirstOrDefault(x => x.UnitId == SelectedEquipment.UnitId);
+        }
+        private void ClearFields()
+        {
+            NameEquipment = null;
+            TypeEquipment = null;
+            Quantity = 0;
+            SelectedMilitaryUnit = null;
         }
         protected void OnPropertyChanged(string propertyName)
         {

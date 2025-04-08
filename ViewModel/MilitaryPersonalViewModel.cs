@@ -17,6 +17,7 @@ namespace MilitaryApp.ViewModel
         public ICommand ApplyFilterSearchByRankCommand { get; }
         public ICommand ResetFiltersCommand { get; }    
         public ICommand ApplyFilterBySpecialty { get; }
+        public ICommand NavigateToMainPageCommand { get; }
 
         private string _firstName;
         private string _lastName;
@@ -56,6 +57,7 @@ namespace MilitaryApp.ViewModel
             ApplyFilterSearchByRankCommand = new RelayCommand (async () => await SearchPersonnelByRankFilter());
             ApplyFilterBySpecialty = new RelayCommand(async () => await SearchMilitaryPersonnelBySpecialty());
             ResetFiltersCommand = new RelayCommand(async () => await ResetFilter());
+            NavigateToMainPageCommand = new RelayCommand(NavigateToMainPage);
 
              InitializationFields().ConfigureAwait(false);
         }
@@ -65,7 +67,6 @@ namespace MilitaryApp.ViewModel
                     Enum.GetValues(typeof(MilitaryRank)).Cast<MilitaryRank>());
             SelectedRank = RankList.FirstOrDefault();
         }
-
         private async Task InitialisationMilitarySpetialties()
         {
             MilitarySpecialties = new ObservableCollection<Militaryspecialty>(await _crudRepositoryMilitarySpelty.GetAllAsync());
@@ -100,6 +101,7 @@ namespace MilitaryApp.ViewModel
             set
             {
                 _selectedItemPersonnel = value;
+                FillFields();
                 OnPropertyChanged(nameof(SelectedItemPersonnel));
             }
         }
@@ -231,7 +233,7 @@ namespace MilitaryApp.ViewModel
         }
         private async Task AddEntries()
         {
-            if (!InputValidation.CheckCommanderUnit(Position, SelectedUnit.CommanderId.Value, out var error))
+            if (!InputValidation.CheckCommanderUnit(Position, SelectedUnit?.CommanderId, out var error)) // проверка на командира тут
             {
                 MessageBox.Show(error);
                 return;
@@ -296,6 +298,30 @@ namespace MilitaryApp.ViewModel
             SelectedSpecialtyFilter = null;
             SelectedUnitFilter = null;
             await LoadMilitaryPersonnelItem();
+            ClearFields();  
+        }
+        private void FillFields()
+        {
+            FirstName = SelectedItemPersonnel.FirstName;
+            LastName = SelectedItemPersonnel.LastName;
+            SelectedRank = (MilitaryRank)Enum.Parse(typeof(MilitaryRank), SelectedItemPersonnel.Rank);
+            Position = SelectedItemPersonnel.Position;
+            SelectedSpecialties = MilitarySpecialties.FirstOrDefault(x => x.Name == SelectedItemPersonnel.Specialties);
+            SelectedUnit = MilitaryUnit.FirstOrDefault(x => x.Name == SelectedItemPersonnel.Unit);
+        }
+        private void ClearFields()
+        {
+            FirstName = null;
+            LastName = null;
+            Position = null;
+            SelectedRank = RankList.FirstOrDefault();
+            SelectedSpecialties = null;
+            SelectedUnit = null;
+
+        }
+        private void NavigateToMainPage()
+        {
+            NavigationService.NavigateTo<MainWindow>();
         }
         protected void OnPropertyChanged(string propertyName)
         {

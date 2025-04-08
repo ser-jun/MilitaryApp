@@ -35,7 +35,7 @@ namespace MilitaryApp.Data.Repositories.Interfaces
                 await _dbSet.AddAsync(entity);
                 await _context.SaveChangesAsync();
                 return entity;
-            }
+            }   
             catch (DbUpdateException ex)
             {
                 MessageBox.Show(ex.InnerException?.Message);

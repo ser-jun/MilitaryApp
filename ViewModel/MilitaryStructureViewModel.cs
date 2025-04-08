@@ -36,6 +36,7 @@ namespace MilitaryApp.ViewModel
     };
         private MilitaryStructureItem _selectedParentItem;
         private MilitaryStructureItem _selectedItem;
+        private bool _isEnabledAutogeneration = true;
 
 
         private ObservableCollection<Army> _armies;
@@ -262,9 +263,28 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedCorpsId));
             }
         }
-        
-        #endregion
+        public bool AutoGenerateEnabled
+        {
+            get => _isEnabledAutogeneration;
+            set
+            {
+                if (_isEnabledAutogeneration != value)
+                {
+                    _isEnabledAutogeneration = value;
+                    OnPropertyChanged(nameof(AutoGenerateEnabled));
+                    _ = UpdateAutoGenerationSetting();
+                }
+            }
+        }
 
+        #endregion
+        private async Task UpdateAutoGenerationSetting()
+        {
+            if (_isEnabledAutogeneration)
+                await _structureRepository.EnableAutoGenerationAsync();
+            else
+                await _structureRepository.DisableAutoGenerationAsync();
+        }
         #region CRUD Operations
 
         private async Task LoadMilitaryStructureItems()
@@ -372,7 +392,6 @@ namespace MilitaryApp.ViewModel
             await LoadMilitaryStructureItems();
 
         }
-
         #endregion
         private void UpdateParentItems()
         {
@@ -438,27 +457,19 @@ namespace MilitaryApp.ViewModel
 
         private void OpenPersonnelWindow()
         {
-            MilitaryPersonalWindow mpWindow = new MilitaryPersonalWindow();
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
-            mpWindow.Show();
+            NavigationService.NavigateTo<MilitaryPersonalWindow>();
         }
         private void OpenEquipmentWindow()
         {
-            EquipmentWindow equipmentWindow = new EquipmentWindow();
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
-            equipmentWindow.Show();
+            NavigationService.NavigateTo<EquipmentWindow>();
         }
         private void OpenWeaponWindow()
         {
-            WeaponWindow weaponWindow = new WeaponWindow();
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
-            weaponWindow.Show();
+            NavigationService.NavigateTo<WeaponWindow>();
         }
         private void OpenInfrastructureWindow()
         {
-            InfrastructureWindow ifrastructureWin = new InfrastructureWindow();
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
-            ifrastructureWin.Show();
+            NavigationService.NavigateTo<InfrastructureWindow>();
         }
 
         private async Task ApllyFilter()
@@ -504,6 +515,24 @@ namespace MilitaryApp.ViewModel
             SelectedFilterType = null;
             await LoadMilitaryStructureItems();
         }
+        private void FillFields()
+        {
+            NewItemName = SelectedItem.Name;
+            SelectedStructureType = SelectedItem == null ? null :
+                SelectedItem.ArmyId.HasValue ? "Армия" :
+                SelectedItem.DivisionId.HasValue ? "Дивизия" :
+                SelectedItem.CorpsId.HasValue ? "Корпус" :
+                SelectedItem.UnitId.HasValue ? "Военная часть" :
+                SelectedItem.SubUnitId.HasValue ? "Подразделение части" : string.Empty;
+           
+            //SelectedParentItem = SelectedItem == null ? null :
+            //    SelectedItem.ArmyId.HasValue ? 
+        }
+        private void UpdateSelectedType()
+        {
+           
+        }
+        
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -14,6 +14,7 @@ namespace MilitaryApp.Data.Repositories
         private readonly BaseCrudAbstract<Corps> _corpsRepo;
         private readonly BaseCrudAbstract<Militaryunit> _unitRepo;
         private readonly BaseCrudAbstract<Subunit> _subunitRepo;
+        private bool _sessionInitialized = false;
 
         public MilitaryStructureRepository(MilitaryDbContext context)
         {
@@ -23,6 +24,7 @@ namespace MilitaryApp.Data.Repositories
             _corpsRepo = new BaseCrudAbstract<Corps>(_context);
             _unitRepo = new BaseCrudAbstract<Militaryunit>(_context);
             _subunitRepo = new BaseCrudAbstract<Subunit>(_context);
+ 
         }
 
         public async Task<List<MilitaryStructureItem>> GetMilitaryStructure()
@@ -185,5 +187,33 @@ namespace MilitaryApp.Data.Repositories
             }
         }
         #endregion
+        private async Task InitializeSessionAsync()
+        {
+            if (!_sessionInitialized)
+            {
+ 
+                await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 1");
+                _sessionInitialized = true;
+            }
+        }
+        public async Task EnableAutoGenerationAsync()
+        {
+            await InitializeSessionAsync();
+            await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 1");
+        }
+
+        public async Task DisableAutoGenerationAsync()
+        {
+            await InitializeSessionAsync();
+            await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 0");
+        }
+
+        public async Task<bool> GetAutoGenerationStatusAsync()
+        {
+            await InitializeSessionAsync();
+            var result = await _context.Database.SqlQueryRaw<int>(
+                "SELECT IFNULL(@auto_generate_units, 1)").FirstOrDefaultAsync();
+            return result == 1;
+        }
     }
 }

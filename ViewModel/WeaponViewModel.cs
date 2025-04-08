@@ -20,6 +20,7 @@ namespace MilitaryApp.ViewModel
         public ICommand UpdateEntry { get; }
         public ICommand ApplyFilterByTypeOrUnitCommand { get; }
         public ICommand ResetFiltersCommand { get; }
+        public ICommand NavigateToMainPageCommand { get; }
 
 
         private readonly IWeaponRepository _weaponRepository;
@@ -49,6 +50,7 @@ namespace MilitaryApp.ViewModel
             UpdateEntry = new RelayCommand(async () => await UpdateWeapon());
             ApplyFilterByTypeOrUnitCommand =new RelayCommand (async () => await GetWeaponsFilteredByTypeOrUnit());
             ResetFiltersCommand =new RelayCommand(async () => await ResetFilters());
+            NavigateToMainPageCommand = new RelayCommand(NavigateToMainPage);
             InitializeField().ConfigureAwait(false);
         }
 
@@ -261,6 +263,10 @@ namespace MilitaryApp.ViewModel
                 MessageBox.Show(ex.Message, ex.StackTrace);
             }
 }
+        private void NavigateToMainPage()
+        {
+            NavigationService.NavigateTo<MainWindow>();
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

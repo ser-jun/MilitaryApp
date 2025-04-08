@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿    using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.DTO;
@@ -75,8 +75,6 @@ namespace MilitaryApp.Data.Repositories
 
         public async Task AddOfficer(int personnelId, string post, Militaryunit unit)
         {
-            
-
             var officer = new Officer
             {
                 PersonnelId = personnelId,

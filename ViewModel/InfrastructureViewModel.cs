@@ -20,6 +20,7 @@ namespace MilitaryApp.ViewModel
         public ICommand DeleteItemCommand { get; }
         public ICommand UpdateItemCommand { get; }
         public ICommand ResetFiltersCommand { get; }
+        public ICommand NavigateToMainPageCommand { get; }
 
         private IInfrastructureRepository _infrastructureRepository;
         private ICrudRepository<Militaryunit> _militaryUnitCrud;
@@ -41,6 +42,7 @@ namespace MilitaryApp.ViewModel
             DeleteItemCommand = new RelayCommand(async () => await DeleteIfrastructure());
             UpdateItemCommand = new RelayCommand(async () => await UpdateInfrastructure());
             ResetFiltersCommand = new RelayCommand(async () => await ResetFilters());
+            NavigateToMainPageCommand = new RelayCommand(NavigateToMainPage);
             LoadData().ConfigureAwait(false);
         }
         private async Task LoadData()
@@ -64,6 +66,7 @@ namespace MilitaryApp.ViewModel
             set
             {
                 _selectedInfrastructure = value;
+                Fillfields();
                 OnPropertyChanged(nameof(SelectedInfrastructure));
      
             }
@@ -190,6 +193,24 @@ namespace MilitaryApp.ViewModel
             //SelectedFilterMilitaryUnit = null;
             //NameBuildingSearch = null;
             await GetInfrastructureInfo();
+            ClearFields();
+        }
+
+        private void Fillfields()
+        {
+            NameInfrastructure = SelectedInfrastructure.Name;
+            SelectedMilitaryUnit = MilitaryUnit.FirstOrDefault(x => x.UnitId == SelectedInfrastructure.UnitId);
+            YearBuild = SelectedInfrastructure.YearBuilt??0;
+        }
+        private void ClearFields()
+        {
+            NameInfrastructure = null;
+            SelectedFilterMilitaryUnit = null;
+            YearBuild = 0;
+        }
+        private void NavigateToMainPage()
+        {
+            NavigationService.NavigateTo<MainWindow>();
         }
         protected void OnPropertyChanged(string propertyName)
         {

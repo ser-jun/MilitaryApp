@@ -232,7 +232,7 @@ namespace MilitaryApp.ViewModel
         {
             NameEquipment = SelectedEquipment.NameEquipment;
             TypeEquipment = SelectedEquipment.TypeEquipment;
-            Quantity = SelectedEquipment.Quantity;
+            Quantity = SelectedEquipment.Quantity.Value;
             SelectedMilitaryUnit = MilitaryUnit.FirstOrDefault(x => x.UnitId == SelectedEquipment.UnitId);
         }
         private void ClearFields()

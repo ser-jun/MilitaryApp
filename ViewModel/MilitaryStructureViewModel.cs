@@ -355,10 +355,7 @@ namespace MilitaryApp.ViewModel
         }
         private async void UpdateTriggersState(bool disable)
         {
-
                 await _structureRepository.SetTriggersState(!disable);
-                MessageBox.Show(disable ? "Триггеры отключены" : "Триггеры включены");
-         
         }
 
         private async Task UpdateItem()

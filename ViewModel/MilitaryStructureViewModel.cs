@@ -36,7 +36,6 @@ namespace MilitaryApp.ViewModel
     };
         private MilitaryStructureItem _selectedParentItem;
         private MilitaryStructureItem _selectedItem;
-        private bool _isEnabledAutogeneration = true;
 
 
         private ObservableCollection<Army> _armies;
@@ -263,28 +262,20 @@ namespace MilitaryApp.ViewModel
                 OnPropertyChanged(nameof(SelectedCorpsId));
             }
         }
-        public bool AutoGenerateEnabled
+        private bool _disableTriggers;
+        public bool DisableTriggers
         {
-            get => _isEnabledAutogeneration;
+            get => _disableTriggers;
             set
             {
-                if (_isEnabledAutogeneration != value)
-                {
-                    _isEnabledAutogeneration = value;
-                    OnPropertyChanged(nameof(AutoGenerateEnabled));
-                    _ = UpdateAutoGenerationSetting();
-                }
+                _disableTriggers = value;
+                OnPropertyChanged(nameof(DisableTriggers));
+                UpdateTriggersState(value);
             }
         }
 
         #endregion
-        private async Task UpdateAutoGenerationSetting()
-        {
-            if (_isEnabledAutogeneration)
-                await _structureRepository.EnableAutoGenerationAsync();
-            else
-                await _structureRepository.DisableAutoGenerationAsync();
-        }
+
         #region CRUD Operations
 
         private async Task LoadMilitaryStructureItems()
@@ -361,6 +352,13 @@ namespace MilitaryApp.ViewModel
                     break;
             }
             await LoadMilitaryStructureItems();
+        }
+        private async void UpdateTriggersState(bool disable)
+        {
+
+                await _structureRepository.SetTriggersState(!disable);
+                MessageBox.Show(disable ? "Триггеры отключены" : "Триггеры включены");
+         
         }
 
         private async Task UpdateItem()

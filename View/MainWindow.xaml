@@ -113,10 +113,9 @@
                         </Style>
                     </ComboBox.Style>
                 </ComboBox>
-                <CheckBox IsChecked="{Binding AutoGenerateEnabled, Mode=TwoWay}"
-              Content="Автогенерация подразделений"
-              Margin="5"
-              VerticalAlignment="Center"/>
+                <CheckBox Content="Отключить автоматическое создание подразделений" 
+              IsChecked="{Binding DisableTriggers}"
+              Margin="5" VerticalAlignment="Center"/>   
                 <Button Command="{Binding AddItemCommand}" Content="Добавить" Margin="0,10,0,0" Width="200"/>
                 <Button Command="{Binding DeleteItemCommand}" Content="Удалить" Margin="0,10,0,0" Width="200" />
                 <Button Command="{Binding UpdateItemCommand}" Content="Изменить" Margin="0,10,0,0" Width="200" />

@@ -12,5 +12,6 @@ namespace MilitaryApp.Data.Repositories.Interfaces
         Task<List<MilitaryStructureItem>> GetMinMaxCountUnit(string param);
         Task<List<MilitaryStructureItem>> GetMilitaryStructure();
         Task<List<MilitaryStructureItem>> GetFilterMilitaryStructure(int? armyId = null, int? divisionId = null, int? corpsId = null);
+        Task SetTriggersState(bool enable);
     }
 }

@@ -14,7 +14,6 @@ namespace MilitaryApp.Data.Repositories
         private readonly BaseCrudAbstract<Corps> _corpsRepo;
         private readonly BaseCrudAbstract<Militaryunit> _unitRepo;
         private readonly BaseCrudAbstract<Subunit> _subunitRepo;
-        private bool _sessionInitialized = false;
 
         public MilitaryStructureRepository(MilitaryDbContext context)
         {
@@ -187,33 +186,11 @@ namespace MilitaryApp.Data.Repositories
             }
         }
         #endregion
-        private async Task InitializeSessionAsync()
+        public async Task SetTriggersState(bool enable)
         {
-            if (!_sessionInitialized)
-            {
- 
-                await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 1");
-                _sessionInitialized = true;
-            }
-        }
-        public async Task EnableAutoGenerationAsync()
-        {
-            await InitializeSessionAsync();
-            await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 1");
-        }
-
-        public async Task DisableAutoGenerationAsync()
-        {
-            await InitializeSessionAsync();
-            await _context.Database.ExecuteSqlRawAsync("SET @auto_generate_units = 0");
-        }
-
-        public async Task<bool> GetAutoGenerationStatusAsync()
-        {
-            await InitializeSessionAsync();
-            var result = await _context.Database.SqlQueryRaw<int>(
-                "SELECT IFNULL(@auto_generate_units, 1)").FirstOrDefaultAsync();
-            return result == 1;
+            await _context.Database.ExecuteSqlRawAsync(
+                "UPDATE AppSettings SET SettingValue = {0} WHERE SettingName = 'AutoCreateSubunits'",
+                enable);
         }
     }
 }

@@ -6,186 +6,151 @@
         xmlns:local="clr-namespace:MilitaryApp.View"
         mc:Ignorable="d"
         Title="Управление вооружением" 
-        Height="768" Width="1366"
         WindowState="Maximized"
         ResizeMode="NoResize"
         FontFamily="Segoe UI"
-        Background="#FFECEFF1">
+        Background="#FF050810">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MilitaryApp;component/Resources/MilitaryStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
     <DockPanel>
-        <!-- Top Panel with Filters -->
+     
         <Border DockPanel.Dock="Top" 
-                Background="#FF37474F" 
+                Background="{StaticResource MediumMilitaryBrush}" 
                 Padding="10"
                 CornerRadius="0,0,8,8"
-                BorderThickness="0,0,0,2"
-                BorderBrush="#FF263238">
+                BorderThickness="0,0,0,1"
+                BorderBrush="{StaticResource AccentMilitaryBrush}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <!-- Filter by Type and Unit -->
-                <GroupBox Header="Фильтр по типу и части" 
-                          Foreground="White"
-                          FontWeight="Bold"
+  
+                <GroupBox Header="ФИЛЬТР ПО ТИПУ И ЧАСТИ" 
                           Margin="5"
-                          Padding="5"
-                          BorderBrush="#FF546E7A">
+                          Width="Auto">
                     <StackPanel Orientation="Horizontal">
                         <ComboBox Width="180" 
-                                  Height="32" 
                                   Margin="5"
                                   ItemsSource="{Binding WeaponTypes}"
                                   SelectedItem="{Binding SelectedWeaponType, Mode=TwoWay}"
                                   DisplayMemberPath="TypeWeapon"/>
 
                         <ComboBox Width="180" 
-                                  Height="32" 
                                   Margin="5"
                                   ItemsSource="{Binding MilitaryUnit}"
                                   SelectedItem="{Binding SelectedFilterMilitaryUnit}"
                                   DisplayMemberPath="Name"/>
 
-                        <Button Content="Применить" 
-                                Width="100" 
-                                Height="32" 
-                                Margin="5"
-                                Command="{Binding ApplyFilterByTypeOrUnitCommand}"/>
+                        <Button Content="ПРИМЕНИТЬ" 
+                                Command="{Binding ApplyFilterByTypeOrUnitCommand}"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Width="120"
+                                Margin="5,0,0,0"/>
                     </StackPanel>
                 </GroupBox>
 
-                <!-- Filter by Quantity and Name -->
-                <GroupBox Header="Фильтр по количеству и названию" 
-                          Foreground="White"
-                          FontWeight="Bold"
+           
+                <GroupBox Header="ФИЛЬТР ПО КОЛИЧЕСТВУ И НАЗВАНИЮ" 
                           Margin="5"
-                          Padding="5"
-                          BorderBrush="#FF546E7A">
+                          Width="Auto">
                     <StackPanel Orientation="Horizontal">
                         <TextBox Width="120" 
-                                 Height="32" 
                                  Margin="5" 
                                  Text="{Binding MinimalQuantity, UpdateSourceTrigger=PropertyChanged}"
                                  ToolTip="Минимальное количество"/>
 
                         <TextBox Width="180" 
-                                 Height="32" 
                                  Margin="5" 
                                  Text="{Binding NameWeaponSearch, UpdateSourceTrigger=PropertyChanged}"
                                  ToolTip="Поиск по названию"/>
 
-                        <Button Content="Сбросить" 
-                                Width="100" 
-                                Height="32" 
-                                Margin="5"
-                                Command="{Binding ResetFiltersCommand}"/>
+                        <Button Content="СБРОСИТЬ" 
+                                Command="{Binding ResetFiltersCommand}"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Width="100"
+                                Margin="5,0,0,0"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
         </Border>
-
-        <!-- Main Content -->
+ 
         <Grid Margin="10,5,10,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-
-            <!-- Data Grid -->
+ 
             <Border Grid.Column="0" 
-                    Background="White" 
-                    CornerRadius="8"
-                    Padding="5"
-                    Margin="0,0,5,0"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
+                    Style="{StaticResource ContentBorderStyle}">
                 <DataGrid AutoGenerateColumns="False"
                           IsReadOnly="True"
                           ItemsSource="{Binding WeaponItem}"
                           SelectedItem="{Binding SelectedWeaponItem}"
-                          SelectionMode="Single"
-                          GridLinesVisibility="None"
-                          RowBackground="#FFF5F5F5"
-                          AlternatingRowBackground="White"
-                          BorderThickness="0"
-                          FontSize="14">
+                          SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Название" Binding="{Binding NameWeapon}" Width="*"/>
-                        <DataGridTextColumn Header="Тип" Binding="{Binding TypeWeapon}" Width="*"/>
-                        <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" Width="*"/>
-                        <DataGridTextColumn Header="Часть" Binding="{Binding NameUnit}" Width="*"/>
+                        <DataGridTextColumn Header="НАЗВАНИЕ" Binding="{Binding NameWeapon}" Width="*"/>
+                        <DataGridTextColumn Header="ТИП" Binding="{Binding TypeWeapon}" Width="*"/>
+                        <DataGridTextColumn Header="КОЛИЧЕСТВО" Binding="{Binding Quantity}" Width="*"/>
+                        <DataGridTextColumn Header="ЧАСТЬ" Binding="{Binding NameUnit}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
-
-            <!-- Control Panel -->
+ 
             <Border Grid.Column="1" 
-                    Background="White" 
-                    CornerRadius="8"
-                    Padding="10"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                    Style="{StaticResource ContentBorderStyle}">
+                <StackPanel Margin="10">
+ 
+                    <Border Style="{StaticResource PanelHeaderStyle}">
+                        <TextBlock Text="УПРАВЛЕНИЕ ВООРУЖЕНИЕМ" 
+                                   Style="{StaticResource HeaderTextStyle}"/>
+                    </Border>
 
-                    <!-- Input Fields -->
-                    <StackPanel Grid.Row="0">
-                        <TextBlock Text="Название" 
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,5"/>
-                        <TextBox Text="{Binding NameWeapon, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="32"
-                                 Padding="5"/>
+ 
+                    <TextBlock Text="НАЗВАНИЕ:" FontWeight="Bold"/>
+                    <TextBox Text="{Binding NameWeapon, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Тип" 
-                                   FontWeight="Bold"
-                                   Margin="0,10,0,5"/>
-                        <TextBox Text="{Binding TypeWeapon, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="32"
-                                 Padding="5"/>
+                    <TextBlock Text="ТИП:" FontWeight="Bold"/>
+                    <TextBox Text="{Binding TypeWeapon, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Количество" 
-                                   FontWeight="Bold"
-                                   Margin="0,10,0,5"/>
-                        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="32"
-                                 Padding="5"/>
+                    <TextBlock Text="КОЛИЧЕСТВО:" FontWeight="Bold"/>
+                    <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Часть" 
-                                   FontWeight="Bold"
-                                   Margin="0,10,0,5"/>
-                        <ComboBox ItemsSource="{Binding MilitaryUnit}"
-                                  SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
-                                  DisplayMemberPath="Name"
-                                  Height="32"/>
-                    </StackPanel>
+                    <TextBlock Text="ЧАСТЬ:" FontWeight="Bold"/>
+                    <ComboBox ItemsSource="{Binding MilitaryUnit}"
+                              SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              Margin="0,0,0,15"/>
 
-                    <!-- Buttons - arranged in two columns -->
-                    <UniformGrid Grid.Row="2" 
-                                 Columns="2" 
-                                 Rows="2" 
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Bottom"
-                                 Margin="0,10,0,0">
+ 
+                    <UniformGrid Columns="2" Margin="0,5,0,0">
                         <Button Command="{Binding AddEntry}" 
-                                Content="Добавить" 
-                                Height="32"
-                                Margin="2"/>
-                        <Button Command="{Binding UpdateEntry}" 
-                                Content="Изменить" 
-                                Height="32"
-                                Margin="2"/>
+                                Content="ДОБАВИТЬ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
+
                         <Button Command="{Binding DeleteEntry}" 
-                                Content="Удалить" 
-                                Height="32"
-                                Margin="2"/>
+                                Content="УДАЛИТЬ"
+                                Style="{StaticResource MilitaryCriticalButtonStyle}"
+                                Margin="3"/>
+
+                        <Button Command="{Binding UpdateEntry}" 
+                                Content="РЕДАКТИРОВАТЬ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
+
                         <Button Command="{Binding NavigateToMainPageCommand}" 
-                                Content="На главную" 
-                                Height="32"
-                                Margin="2"/>
+                                Content="НА ГЛАВНУЮ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
                     </UniformGrid>
-                </Grid>
+                </StackPanel>
             </Border>
         </Grid>
     </DockPanel>

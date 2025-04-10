@@ -12,6 +12,10 @@
     <None Remove="Images\Background.jpg" />
     <None Remove="Music\backgroundMusic.mp3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Resources\MilitaryStyles.xaml" />
+  </ItemGroup>
 <ItemGroup>
 
   <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
@@ -36,6 +40,9 @@
   </Resource>
   <Resource Include="Music\backgroundMusic.mp3">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Resource>
+  <Resource Include="Resources\MilitaryStyles.xaml">
+    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
   </Resource>
 </ItemGroup>
 

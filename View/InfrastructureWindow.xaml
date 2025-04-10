@@ -6,135 +6,113 @@
         xmlns:local="clr-namespace:MilitaryApp.View"
         mc:Ignorable="d"
         Title="Infrastructure Management" 
-        Height="768" Width="1366"
         WindowState="Maximized"
         ResizeMode="NoResize"
         FontFamily="Segoe UI"
-        Background="#FFECEFF1">
+       Background="#FF050810">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MilitaryApp;component/Resources/MilitaryStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
     <DockPanel>
-        <!-- Top Panel with Filters -->
         <Border DockPanel.Dock="Top" 
-                Background="#FF37474F" 
+                Background="{StaticResource MediumMilitaryBrush}" 
                 Padding="10"
                 CornerRadius="0,0,8,8"
-                BorderThickness="0,0,0,2"
-                BorderBrush="#FF263238">
+                BorderThickness="0,0,0,1"
+                BorderBrush="{StaticResource AccentMilitaryBrush}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <!-- Filter Controls -->
-                <GroupBox Header="Фильтрация" 
-                          Foreground="White"
-                          FontWeight="Bold"
+                <GroupBox Header="ФИЛЬТРАЦИЯ" 
                           Margin="5"
-                          Padding="5"
-                          BorderBrush="#FF546E7A">
+                          Width="Auto">
                     <StackPanel Orientation="Horizontal">
                         <ComboBox Width="180" 
-                                  Height="32" 
                                   Margin="5"
                                   ItemsSource="{Binding MilitaryUnit}"
                                   SelectedItem="{Binding SelectedFilterMilitaryUnit}"
                                   DisplayMemberPath="Name"/>
 
                         <TextBox Width="180" 
-                                 Height="32" 
                                  Margin="5" 
                                  Text="{Binding NameBuildingSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Button Content="Применить фильтр" 
-                                Width="120" 
-                                Height="32" 
-                                Margin="5"
-                                Command="{Binding ApplyFilterByNameOrUnitCommand}"/>
+                   
 
-                        <Button Content="Очистить" 
-                                Width="120" 
-                                Height="32" 
-                                Margin="5"
-                                Command="{Binding ResetFiltersCommand}"/>
+                        <Button Content="СБРОСИТЬ" 
+                                Command="{Binding ResetFiltersCommand}"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Width="120"
+                                Margin="5,0,0,0"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
         </Border>
 
-        <!-- Main Content -->
         <Grid Margin="10,5,10,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Data Grid -->
             <Border Grid.Column="0" 
-                    Background="White" 
-                    CornerRadius="8"
-                    Padding="5"
-                    Margin="0,0,5,0"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
+                    Style="{StaticResource ContentBorderStyle}">
                 <DataGrid IsReadOnly="True"
                           ItemsSource="{Binding InfrastructureItem}"
                           SelectedItem="{Binding SelectedInfrastructure}"
-                          AutoGenerateColumns="False"
-                          GridLinesVisibility="None"
-                          RowBackground="#FFF5F5F5"
-                          AlternatingRowBackground="White"
-                          BorderThickness="0"
-                          FontSize="14">
+                          AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Unit" Binding="{Binding UnitName}" Width="*"/>
-                        <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}" Width="*"/>
+                        <DataGridTextColumn Header="НАЗВАНИЕ" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="ЧАСТЬ" Binding="{Binding UnitName}" Width="*"/>
+                        <DataGridTextColumn Header="ГОД ПОСТРОЙКИ" Binding="{Binding YearBuilt}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
 
-            <!-- Control Panel -->
             <Border Grid.Column="1" 
-                    Background="White" 
-                    CornerRadius="8"
-                    Padding="10"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
-                <StackPanel>
-                    <TextBlock Text="Название" 
-                               FontWeight="Bold"
-                               Margin="0,0,0,5"/>
-                    <TextBox Text="{Binding NameInfrastructure, UpdateSourceTrigger=PropertyChanged}" 
-                             Height="32"
-                             Padding="5"/>
+                    Style="{StaticResource ContentBorderStyle}">
+                <StackPanel Margin="10">
+                    <Border Style="{StaticResource PanelHeaderStyle}">
+                        <TextBlock Text="УПРАВЛЕНИЕ ИНФРАСТРУКТУРОЙ" 
+                                   Style="{StaticResource HeaderTextStyle}"/>
+                    </Border>
 
-                    <TextBlock Text="Часть" 
-                               FontWeight="Bold"
-                               Margin="0,10,0,5"/>
+                    <TextBlock Text="НАЗВАНИЕ:" FontWeight="Bold"/>
+                    <TextBox Text="{Binding NameInfrastructure, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="ЧАСТЬ:" FontWeight="Bold" Margin="0,10,0,0"/>
                     <ComboBox ItemsSource="{Binding MilitaryUnit}"
                               SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
-                              DisplayMemberPath="Name"
-                              Height="32"/>
+                              DisplayMemberPath="Name"/>
 
-                    <TextBlock Text="Год постройки" 
-                               FontWeight="Bold"
-                               Margin="0,10,0,5"/>
-                    <TextBox Text="{Binding YearBuild}" 
-                             Height="32"
-                             Padding="5"/>
+                    <TextBlock Text="ГОД ПОСТРОЙКИ:" FontWeight="Bold" Margin="0,10,0,0"/>
+                    <TextBox Text="{Binding YearBuild}"/>
 
-                    <Button Command="{Binding AddItemCommand}" 
-                            Content="Добавить" 
-                            Height="32"
-                            Margin="0,10,0,5"/>
-                    <Button Command="{Binding DeleteItemCommand}" 
-                            Content="Удалить" 
-                            Height="32"
-                            Margin="0,5,0,5"/>
-                    <Button Command="{Binding UpdateItemCommand}" 
-                            Content="Изменить" 
-                            Height="32"
-                            Margin="0,5,0,5"/>
-                    <Button Command="{Binding NavigateToMainPageCommand}" 
-                            Content="На главную" 
-                            Height="32"
-                            Margin="0,10,0,0"/>
+                    <UniformGrid Columns="2" Margin="0,15,0,0">
+                        <Button Command="{Binding AddItemCommand}" 
+                                Content="ДОБАВИТЬ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
+
+                        <Button Command="{Binding DeleteItemCommand}" 
+                                Content="УДАЛИТЬ"
+                                Style="{StaticResource MilitaryCriticalButtonStyle}"
+                                Margin="3"/>
+
+                        <Button Command="{Binding UpdateItemCommand}" 
+                                Content="РЕДАКТИРОВАТЬ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
+
+                        <Button Command="{Binding NavigateToMainPageCommand}" 
+                                Content="НА ГЛАВНУЮ"
+                                Style="{StaticResource MilitaryButtonStyle}"
+                                Margin="3"/>
+                    </UniformGrid>
                 </StackPanel>
             </Border>
         </Grid>

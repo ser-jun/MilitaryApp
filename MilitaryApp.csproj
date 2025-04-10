@@ -7,6 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\Background.jpg" />
+  </ItemGroup>
 <ItemGroup>
 
   <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
@@ -23,6 +27,11 @@
   
 
   <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.2" />
+</ItemGroup>
+<ItemGroup>
+  <Resource Include="Images\Background.jpg">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Resource>
 </ItemGroup>
 
 </Project>

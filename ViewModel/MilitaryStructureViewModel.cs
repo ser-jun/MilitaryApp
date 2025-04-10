@@ -23,6 +23,7 @@ namespace MilitaryApp.ViewModel
         public ICommand ApplyFilterCommand { get; } 
         public ICommand GetMinMaxCountunitCommand { get; }
         public ICommand ResetFiltersCommand { get; }
+        public ICommand OpenMainPage { get; }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -86,6 +87,7 @@ namespace MilitaryApp.ViewModel
             OpenEquipmentWindowCommand = new RelayCommand(OpenEquipmentWindow);
             OpenWeaponWindowCommand = new RelayCommand(OpenWeaponWindow);
             OpenInfrastructureWindowCommand = new RelayCommand(OpenInfrastructureWindow);
+            OpenMainPage = new RelayCommand(OpenMainMenu);
 
             DisableTriggers = true;
 
@@ -551,6 +553,10 @@ namespace MilitaryApp.ViewModel
             }
         }
 
+        private void OpenMainMenu()
+        {
+            NavigationService.NavigateTo<MainMenu>();
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

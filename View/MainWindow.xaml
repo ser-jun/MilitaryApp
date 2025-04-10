@@ -197,6 +197,10 @@
                             Content="on infrastructure win" 
                             Height="32"
                             Margin="0,5,0,0"/>
+                    <Button Command="{Binding OpenMainPage}" 
+                        Content="На главную страницу" 
+                        Height="32"
+                        Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
         </Grid>

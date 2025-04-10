@@ -1,6 +1,7 @@
 ﻿using MilitaryApp.Data.Repositories.Interfaces;
 using MilitaryApp.DTO;
 using MilitaryApp.Models;
+using MilitaryApp.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -265,7 +266,7 @@ namespace MilitaryApp.ViewModel
 }
         private void NavigateToMainPage()
         {
-            NavigationService.NavigateTo<MainWindow>();
+            NavigationService.NavigateTo<MainMenu>();
         }
         protected void OnPropertyChanged(string propertyName)
         {

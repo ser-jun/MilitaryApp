@@ -6,6 +6,7 @@ using MilitaryApp.Data.Repositories;
 using MilitaryApp.Data.Repositories.Interfaces;
 using System.Windows;
 using System.Windows.Input;
+using MilitaryApp.View;
 
 namespace MilitaryApp.ViewModel
 {
@@ -321,7 +322,7 @@ namespace MilitaryApp.ViewModel
         }
         private void NavigateToMainPage()
         {
-            NavigationService.NavigateTo<MainWindow>();
+            NavigationService.NavigateTo<MainMenu>();
         }
         protected void OnPropertyChanged(string propertyName)
         {

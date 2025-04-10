@@ -85,10 +85,8 @@ namespace MilitaryApp.Data.Repositories
 
         public async Task DeleteUnit(int unitId)
         {
-            //var unitToDelete = await _unitRepo.GetByIdAsync(unitId);
-            //if (unitToDelete != null)
-            //    await _unitRepo.DeleteAsync(unitToDelete);
-                await _context.Database.ExecuteSqlRawAsync(
+          
+                    await _context.Database.ExecuteSqlRawAsync(
              "CALL SafeDeleteMilitaryUnitComplete({0})",
              unitId);
         }

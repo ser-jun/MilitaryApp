@@ -5,61 +5,138 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MilitaryApp.View"
         mc:Ignorable="d"
-        Title="InfrastructureWindow" Height="450" Width="800"
+        Title="Infrastructure Management" 
+        Height="768" Width="1366"
+        WindowState="Maximized"
         ResizeMode="NoResize"
-        WindowState="Maximized">
+        FontFamily="Segoe UI"
+        Background="#FFECEFF1">
 
     <DockPanel>
+        <!-- Top Panel with Filters -->
+        <Border DockPanel.Dock="Top" 
+                Background="#FF37474F" 
+                Padding="10"
+                CornerRadius="0,0,8,8"
+                BorderThickness="0,0,0,2"
+                BorderBrush="#FF263238">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- Filter Controls -->
+                <GroupBox Header="Фильтрация" 
+                          Foreground="White"
+                          FontWeight="Bold"
+                          Margin="5"
+                          Padding="5"
+                          BorderBrush="#FF546E7A">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Width="180" 
+                                  Height="32" 
+                                  Margin="5"
+                                  ItemsSource="{Binding MilitaryUnit}"
+                                  SelectedItem="{Binding SelectedFilterMilitaryUnit}"
+                                  DisplayMemberPath="Name"/>
 
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightGray" Margin="5">
- 
-            <ComboBox Width="150" Height="30" Margin="5"
-                      ItemsSource="{Binding MilitaryUnit}"
-                      SelectedItem="{Binding SelectedFilterMilitaryUnit}"
-                      DisplayMemberPath="Name"/>
+                        <TextBox Width="180" 
+                                 Height="32" 
+                                 Margin="5" 
+                                 Text="{Binding NameBuildingSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBox Width="150" Height="30" Margin="5" Text="{Binding NameBuildingSearch, UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Content="Применить фильтр" Width="120" Height="30" Margin="5"
-                    Command="{Binding ApplyFilterByNameOrUnitCommand}"/>
+                        <Button Content="Применить фильтр" 
+                                Width="120" 
+                                Height="32" 
+                                Margin="5"
+                                Command="{Binding ApplyFilterByNameOrUnitCommand}"/>
 
-            <Button Content="Очистить" Width="120" Height="30" Margin="5"
-                    Command="{Binding ResetFiltersCommand}"/>
-        </StackPanel>
-        <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <DataGrid IsReadOnly="True"
-            ItemsSource="{Binding InfrastructureItem}"
-                  SelectedItem="{Binding SelectedInfrastructure}"
-                  AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                <DataGridTextColumn Header="Unit" Binding="{Binding UnitName}" Width="*"/>
-                <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}" Width="*"/>
-            </DataGrid.Columns>
-            
-        </DataGrid>
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Text="Название" Width="200"/>
-            <TextBox Text="{Binding NameInfrastructure, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
-            <TextBlock Text="Часть" Width="200"/>
-            <ComboBox
-                ItemsSource="{Binding MilitaryUnit}"
-                SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
-                DisplayMemberPath="Name"
-                Width="200"/>
-            <TextBlock Text="Год постройки" Width="200"/>
-            <TextBox Text="{Binding YearBuild}" Width="200"/>
-            <Button Command="{Binding AddItemCommand}" Width="200" Margin="0,10,0,0" Content="Добавить" />
-            <Button Command="{Binding DeleteItemCommand}" Width="200" Margin="0,10,0,0" Content="Удалить"/>
-            <Button Command="{Binding UpdateItemCommand}" Width="200" Margin="0,10,0,0" Content=" Изменить"/>
-            <Button Command="{Binding NavigateToMainPageCommand}" Width="200" Margin="0,10,0,0" Content="На главную"/>
+                        <Button Content="Очистить" 
+                                Width="120" 
+                                Height="32" 
+                                Margin="5"
+                                Command="{Binding ResetFiltersCommand}"/>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Border>
 
+        <!-- Main Content -->
+        <Grid Margin="10,5,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
 
+            <!-- Data Grid -->
+            <Border Grid.Column="0" 
+                    Background="White" 
+                    CornerRadius="8"
+                    Padding="5"
+                    Margin="0,0,5,0"
+                    BorderBrush="#FFB0BEC5"
+                    BorderThickness="1">
+                <DataGrid IsReadOnly="True"
+                          ItemsSource="{Binding InfrastructureItem}"
+                          SelectedItem="{Binding SelectedInfrastructure}"
+                          AutoGenerateColumns="False"
+                          GridLinesVisibility="None"
+                          RowBackground="#FFF5F5F5"
+                          AlternatingRowBackground="White"
+                          BorderThickness="0"
+                          FontSize="14">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding UnitName}" Width="*"/>
+                        <DataGridTextColumn Header="Year build" Binding="{Binding YearBuilt}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
 
-        </StackPanel>
-    </Grid>
+            <!-- Control Panel -->
+            <Border Grid.Column="1" 
+                    Background="White" 
+                    CornerRadius="8"
+                    Padding="10"
+                    BorderBrush="#FFB0BEC5"
+                    BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="Название" 
+                               FontWeight="Bold"
+                               Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding NameInfrastructure, UpdateSourceTrigger=PropertyChanged}" 
+                             Height="32"
+                             Padding="5"/>
+
+                    <TextBlock Text="Часть" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <ComboBox ItemsSource="{Binding MilitaryUnit}"
+                              SelectedItem="{Binding SelectedMilitaryUnit, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              Height="32"/>
+
+                    <TextBlock Text="Год постройки" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <TextBox Text="{Binding YearBuild}" 
+                             Height="32"
+                             Padding="5"/>
+
+                    <Button Command="{Binding AddItemCommand}" 
+                            Content="Добавить" 
+                            Height="32"
+                            Margin="0,10,0,5"/>
+                    <Button Command="{Binding DeleteItemCommand}" 
+                            Content="Удалить" 
+                            Height="32"
+                            Margin="0,5,0,5"/>
+                    <Button Command="{Binding UpdateItemCommand}" 
+                            Content="Изменить" 
+                            Height="32"
+                            Margin="0,5,0,5"/>
+                    <Button Command="{Binding NavigateToMainPageCommand}" 
+                            Content="На главную" 
+                            Height="32"
+                            Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </DockPanel>
 </Window>

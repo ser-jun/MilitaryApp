@@ -4,12 +4,14 @@ using MilitaryApp.Models;
 using MilitaryApp.View;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace MilitaryApp.ViewModel
 {
-    public class MilitaryStructureViewModel : INotifyPropertyChanged
+    public class MilitaryStructureViewModel : INotifyPropertyChanged, IInitializable
     {
         public ICommand AddItemCommand { get; }
         public ICommand DeleteItemCommand { get; }
@@ -85,6 +87,8 @@ namespace MilitaryApp.ViewModel
             OpenWeaponWindowCommand = new RelayCommand(OpenWeaponWindow);
             OpenInfrastructureWindowCommand = new RelayCommand(OpenInfrastructureWindow);
 
+            DisableTriggers = true;
+
             StructureTypes = new ObservableCollection<string>
             {
                 "Армия", "Дивизия", "Корпус", "Военная часть", "Подразделение части"
@@ -95,14 +99,15 @@ namespace MilitaryApp.ViewModel
             };
 
             ParentItems = new ObservableCollection<MilitaryStructureItem>();
-            LoadFields().ConfigureAwait(false);
+            InitializeAsync().ConfigureAwait(false);
+
+ 
         }
 
-        private async Task LoadFields()
+        public async Task InitializeAsync()
         {
             await LoadMilitaryStructureItems();
             await LoadData();
-            SelectedFilterType = null;
         }
         #region Properties
 
@@ -194,6 +199,10 @@ namespace MilitaryApp.ViewModel
             {
                 _selectedItem = value;
                 OnPropertyChanged(nameof(SelectedItem));
+                if(SelectedItem != null)
+                {
+                    FillFields();
+                }
             }
         }
         public string SelectedFilterType
@@ -508,26 +517,40 @@ namespace MilitaryApp.ViewModel
         {
             SelectedParameter = null;
             SelectedFilterType = null;
+            NewItemName = null;
+            SelectedParentItem = null;
+            SelectedStructureType = null;
             await LoadMilitaryStructureItems();
         }
         private void FillFields()
         {
-            NewItemName = SelectedItem.Name;
-            SelectedStructureType = SelectedItem == null ? null :
-                SelectedItem.ArmyId.HasValue ? "Армия" :
-                SelectedItem.DivisionId.HasValue ? "Дивизия" :
-                SelectedItem.CorpsId.HasValue ? "Корпус" :
-                SelectedItem.UnitId.HasValue ? "Военная часть" :
-                SelectedItem.SubUnitId.HasValue ? "Подразделение части" : string.Empty;
-           
-            //SelectedParentItem = SelectedItem == null ? null :
-            //    SelectedItem.ArmyId.HasValue ? 
+            if (SelectedItem != null)
+            {
+                switch (SelectedStructureType)
+                {
+                    case "Армия":
+                        NewItemName = SelectedItem.ArmyName;
+                        break;
+                    case "Дивизия":
+                        NewItemName = SelectedItem.DivisionName;
+                        SelectedParentItem = ParentItems.FirstOrDefault(c => c.ArmyId == SelectedItem.ArmyId);
+                        break;
+                    case "Корпус":
+                        NewItemName = SelectedItem.CorpsName;
+                        SelectedParentItem = ParentItems.FirstOrDefault(c => c.DivisionId == SelectedItem.DivisionId);
+                        break;
+                    case "Военная часть":
+                        NewItemName = SelectedItem.UnitName;
+                        SelectedParentItem = ParentItems.FirstOrDefault(c => c.CorpsId == SelectedItem.CorpsId);
+                        break;
+                    case "Подразделение части":
+                        NewItemName = SelectedItem.SubUnitName;
+                        SelectedParentItem = ParentItems.FirstOrDefault(c => c.UnitId == SelectedItem.UnitId);
+                        break;
+                }
+            }
         }
-        private void UpdateSelectedType()
-        {
-           
-        }
-        
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

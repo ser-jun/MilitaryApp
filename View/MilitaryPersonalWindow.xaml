@@ -5,99 +5,210 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MilitaryApp.View"
         mc:Ignorable="d"
-        Title="Управление персоналом" Height="450" Width="800"
+        Title="Управление персоналом" 
+        Height="768" Width="1366"
         WindowState="Maximized"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        FontFamily="Segoe UI"
+        Background="#FFECEFF1">
 
     <DockPanel>
+        <!-- Top Panel with Filters -->
+        <Border DockPanel.Dock="Top" 
+                Background="#FF37474F" 
+                Padding="10"
+                CornerRadius="0,0,8,8"
+                BorderThickness="0,0,0,2"
+                BorderBrush="#FF263238">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- Filter by Unit -->
+                <GroupBox Header="Фильтр по части" 
+                          Foreground="White"
+                          FontWeight="Bold"
+                          Margin="5"
+                          Padding="5"
+                          BorderBrush="#FF546E7A">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Width="180" 
+                                  Height="32" 
+                                  Margin="5"
+                                  ItemsSource="{Binding MilitaryUnit}" 
+                                  DisplayMemberPath="Name"
+                                  SelectedValuePath="UnitId"
+                                  SelectedItem="{Binding SelectedUnitId, Mode=TwoWay}"
+                                  Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По части}"/>
+                    </StackPanel>
+                </GroupBox>
 
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightGray" Margin="5">
+                <!-- Filter by Rank -->
+                <GroupBox Header="Фильтр по званию" 
+                          Foreground="White"
+                          FontWeight="Bold"
+                          Margin="5"
+                          Padding="5"
+                          BorderBrush="#FF546E7A">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Width="180" 
+                                  Height="32" 
+                                  Margin="5"
+                                  ItemsSource="{Binding RankList}" 
+                                  SelectedItem="{Binding SelectedRankFilter}"
+                                  Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По званию}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding MilitaryUnit}" 
-                          DisplayMemberPath="Name"
-                          SelectedValuePath="UnitId"
-                         SelectedItem="{Binding SelectedUnitId, Mode=TwoWay}"
-                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По части}"/>
+                        <Button Content="Применить" 
+                                Width="100" 
+                                Height="32" 
+                                Margin="5"
+                                Command="{Binding ApplyFilterSearchByRankCommand}"/>
+                    </StackPanel>
+                </GroupBox>
 
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding RankList}" 
-                          SelectedItem="{Binding SelectedRankFilter}"
-                          Visibility="{Binding SelectedFilterType, Converter={StaticResource FilterTypeToVisibilityConverter}, ConverterParameter=По званию}"/>
+                <!-- Filter by Specialty -->
+                <GroupBox Header="Фильтр по специальности" 
+                          Foreground="White"
+                          FontWeight="Bold"
+                          Margin="5"
+                          Padding="5"
+                          BorderBrush="#FF546E7A">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Width="180" 
+                                  Height="32" 
+                                  Margin="5"
+                                  ItemsSource="{Binding MilitarySpecialties}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding SelectedSpecialtyFilter}"/>
 
-                <Button Content="Применить" Width="100" Height="30" Margin="5"
-                        Command="{Binding ApplyFilterSearchByRankCommand}"/>
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding MilitarySpecialties}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedSpecialtyFilter}"/>
-              
-                <ComboBox Width="150" Height="30" Margin="5"
-                          ItemsSource="{Binding MilitaryUnit}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedUnitFilter}"/>
-                <Button Content="Применить" Width="100" Height="30" Margin="5"
-                        Command="{Binding ApplyFilterBySpecialty}"/>
-                <Button Content="Сбросить" Width="100" Height="30" Margin="5"
+                        <ComboBox Width="180" 
+                                  Height="32" 
+                                  Margin="5"
+                                  ItemsSource="{Binding MilitaryUnit}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding SelectedUnitFilter}"/>
+
+                        <Button Content="Применить" 
+                                Width="100" 
+                                Height="32" 
+                                Margin="5"
+                                Command="{Binding ApplyFilterBySpecialty}"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Reset Button -->
+                <Button Content="Сбросить" 
+                        Width="100" 
+                        Height="32" 
+                        Margin="5"
+                        VerticalAlignment="Bottom"
                         Command="{Binding ResetFiltersCommand}"/>
             </StackPanel>
-        </StackPanel>
+        </Border>
 
-        
-        
-        <Grid Margin="10">
+        <!-- Main Content -->
+        <Grid Margin="10,5,10,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
-            <DataGrid AutoGenerateColumns="False" 
-                      ItemsSource="{Binding MilitaryPersonnelItem}" 
-                      SelectedItem="{Binding SelectedItemPersonnel}" 
-                      SelectionMode="Single"
-                      Grid.Column="0"
-                      CanUserReorderColumns="False"
-                      CanUserResizeColumns="False"
-                      IsReadOnly="True">
-                <DataGrid.Background>
-                    <ImageBrush/>
-                </DataGrid.Background>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*"/>
-                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*"/>
-                    <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="*"/>
-                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="*"/>
-                    <DataGridTextColumn Header="Specilties" Binding="{Binding Specialties}" Width="*"/>
-                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="*"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <!-- Data Grid -->
+            <Border Grid.Column="0" 
+                    Background="White" 
+                    CornerRadius="8"
+                    Padding="5"
+                    Margin="0,0,5,0"
+                    BorderBrush="#FFB0BEC5"
+                    BorderThickness="1">
+                <DataGrid AutoGenerateColumns="False" 
+                          ItemsSource="{Binding MilitaryPersonnelItem}" 
+                          SelectedItem="{Binding SelectedItemPersonnel}" 
+                          SelectionMode="Single"
+                          IsReadOnly="True"
+                          GridLinesVisibility="None"
+                          RowBackground="#FFF5F5F5"
+                          AlternatingRowBackground="White"
+                          BorderThickness="0"
+                          FontSize="14">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}" Width="*"/>
+                        <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}" Width="*"/>
+                        <DataGridTextColumn Header="Звание" Binding="{Binding Rank}" Width="*"/>
+                        <DataGridTextColumn Header="Должность" Binding="{Binding Position}" Width="*"/>
+                        <DataGridTextColumn Header="Специальность" Binding="{Binding Specialties}" Width="*"/>
+                        <DataGridTextColumn Header="Часть" Binding="{Binding Unit}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
 
-            <StackPanel Grid.Column="1" Margin="10" Width="200">
-                <TextBlock Text="Имя:" />
-                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-                <TextBlock Text="Фамииля: " />
-                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-                <TextBlock Text="Звание: " />
-                <ComboBox ItemsSource="{Binding RankList}" 
-                          SelectedItem="{Binding SelectedRank}" 
-                          Width="200" />
-                <TextBlock Text="Должность: " />
-                <TextBox Text="{Binding Position, UpdateSourceTrigger=PropertyChanged}" Width="200" />
-                <TextBlock Text="Воинская специальность: " />
-                <ComboBox ItemsSource="{Binding MilitarySpecialties}" 
-                          SelectedItem="{Binding SelectedSpecialties}" 
-                          Width="200" DisplayMemberPath="Name"/>
-                <TextBlock Text="Воинская часть: " />
-                <ComboBox ItemsSource="{Binding MilitaryUnit}" 
-                          SelectedItem="{Binding SelectedUnit, Mode=TwoWay}"
-                          Width="200" DisplayMemberPath="Name"/>
+            
+            <Border Grid.Column="1" 
+                    Background="White" 
+                    CornerRadius="8"
+                    Padding="10"
+                    BorderBrush="#FFB0BEC5"
+                    BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="Имя:" 
+                               FontWeight="Bold"
+                               Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" 
+                             Height="32"
+                             Padding="5"/>
 
-                <Button Command="{Binding AddEntry}" Content="Add entry" Width="200" Margin="0,10,0,0"/>
-                <Button Command="{Binding DeleteEntry}" Content="Delete" Width="200" Margin="0,10,0,0"/>
-                <Button Command="{Binding UpdateEntry}" Content="Update" Width="200" Margin="0,10,0,0"/>
-                <Button Command="{Binding NavigateToMainPageCommand}" Content="На главную" Width="200" Margin="0,10,0,0"/>
-            </StackPanel>
+                    <TextBlock Text="Фамилия:" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" 
+                             Height="32"
+                             Padding="5"/>
+
+                    <TextBlock Text="Звание:" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <ComboBox ItemsSource="{Binding RankList}" 
+                              SelectedItem="{Binding SelectedRank}" 
+                              Height="32"/>
+
+                    <TextBlock Text="Должность:" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <TextBox Text="{Binding Position, UpdateSourceTrigger=PropertyChanged}" 
+                             Height="32"
+                             Padding="5"/>
+
+                    <TextBlock Text="Воинская специальность:" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <ComboBox ItemsSource="{Binding MilitarySpecialties}" 
+                              SelectedItem="{Binding SelectedSpecialties}" 
+                              DisplayMemberPath="Name"
+                              Height="32"/>
+
+                    <TextBlock Text="Воинская часть:" 
+                               FontWeight="Bold"
+                               Margin="0,10,0,5"/>
+                    <ComboBox ItemsSource="{Binding MilitaryUnit}" 
+                              SelectedItem="{Binding SelectedUnit, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              Height="32"/>
+
+                    <Button Command="{Binding AddEntry}" 
+                            Content="Добавить" 
+                            Height="32"
+                            Margin="0,10,0,5"/>
+                    <Button Command="{Binding DeleteEntry}" 
+                            Content="Удалить" 
+                            Height="32"
+                            Margin="0,5,0,5"/>
+                    <Button Command="{Binding UpdateEntry}" 
+                            Content="Изменить" 
+                            Height="32"
+                            Margin="0,5,0,5"/>
+                    <Button Command="{Binding NavigateToMainPageCommand}" 
+                            Content="На главную" 
+                            Height="32"
+                            Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
         </Grid>
     </DockPanel>
 </Window>

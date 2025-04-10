@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MilitaryApp.Data.Repositories.Interfaces;
 
 namespace MilitaryApp
 {
@@ -14,11 +15,13 @@ namespace MilitaryApp
             var currentWindow = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
             var newWindow = new T();
 
-            if (currentWindow != null)
+   
+            if (newWindow.DataContext is IInitializable initializable)
             {
-                currentWindow.Close();
+                initializable.InitializeAsync();
             }
 
+            currentWindow?.Close();
             newWindow.Show();
         }
     }

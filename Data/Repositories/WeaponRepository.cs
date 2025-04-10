@@ -67,6 +67,7 @@ namespace MilitaryApp.Data.Repositories
         {
             var weapon = await _crudWeapon.GetByIdAsync(weaponId);
             await _crudWeapon.DeleteAsync(weapon);
+
         } 
         public async Task UpdateWeapon(int weaponId, int newUnitId, string newName, string newType, int newQuantity)
         {

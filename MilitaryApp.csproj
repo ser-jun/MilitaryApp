@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Remove="Images\Background.jpg" />
+    <None Remove="Music\backgroundMusic.mp3" />
   </ItemGroup>
 <ItemGroup>
 
@@ -22,6 +23,7 @@
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     <PrivateAssets>all</PrivateAssets>
   </PackageReference>
+  <PackageReference Include="NAudio" Version="2.2.1" />
 
   <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3" />
   
@@ -30,6 +32,9 @@
 </ItemGroup>
 <ItemGroup>
   <Resource Include="Images\Background.jpg">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Resource>
+  <Resource Include="Music\backgroundMusic.mp3">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
   </Resource>
 </ItemGroup>

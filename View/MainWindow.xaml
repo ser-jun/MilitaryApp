@@ -5,41 +5,94 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Military Structure Manager" 
-        Height="768" Width="1366"
         WindowState="Maximized"
         ResizeMode="NoResize"
-        FontFamily="Segoe UI"
-        Background="#FFECEFF1">
+        FontFamily="Segoe UI">
 
     <Window.Resources>
+        <!-- Объявляем цвета как Color -->
+        <Color x:Key="DarkMilitaryColor">#FF0D1F2D</Color>
+        <Color x:Key="MediumMilitaryColor">#FF1A3A4A</Color>
+        <Color x:Key="LightMilitaryColor">#FF2D4D5C</Color>
+        <Color x:Key="AccentMilitaryColor">#FF5D8AA8</Color>
+        <Color x:Key="TextMilitaryColor">#FFE1E1E1</Color>
+        <Color x:Key="CriticalColor">#FFC44D58</Color>
+
+        <!-- Создаем SolidColorBrush на основе цветов -->
+        <SolidColorBrush x:Key="DarkMilitaryBrush" Color="{StaticResource DarkMilitaryColor}"/>
+        <SolidColorBrush x:Key="MediumMilitaryBrush" Color="{StaticResource MediumMilitaryColor}"/>
+        <SolidColorBrush x:Key="LightMilitaryBrush" Color="{StaticResource LightMilitaryColor}"/>
+        <SolidColorBrush x:Key="AccentMilitaryBrush" Color="{StaticResource AccentMilitaryColor}"/>
+        <SolidColorBrush x:Key="TextMilitaryBrush" Color="{StaticResource TextMilitaryColor}"/>
+        <SolidColorBrush x:Key="CriticalBrush" Color="{StaticResource CriticalColor}"/>
+
+        <!-- Градиентный фон -->
+        <LinearGradientBrush x:Key="MilitaryBackground" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF050810" Offset="0"/>
+            <GradientStop Color="#FF0F1A25" Offset="0.5"/>
+            <GradientStop Color="#FF050810" Offset="1"/>
+        </LinearGradientBrush>
+
         <!-- Стиль для кнопок -->
         <Style x:Key="MilitaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#FF37474F"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource MediumMilitaryBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#FF263238"/>
-            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
+            <Setter Property="Padding" Value="12 6"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                CornerRadius="3">
+                            <Grid>
+                                <Rectangle RadiusX="3" RadiusY="3">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#202D3B" Offset="0"/>
+                                            <GradientStop Color="#1A2734" Offset="0.5"/>
+                                            <GradientStop Color="#14202D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF7EA8C4"/>
+                                <Setter Property="Foreground" Value="#FFF0F0F0"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="{StaticResource AccentMilitaryColor}" Opacity="0.6"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#502D4D5C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- Стиль для критических кнопок -->
+        <Style x:Key="MilitaryCriticalButtonStyle" TargetType="Button" BasedOn="{StaticResource MilitaryButtonStyle}">
+            <Setter Property="BorderBrush" Value="{StaticResource CriticalBrush}"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF455A64"/>
+                    <Setter Property="BorderBrush" Value="#FFE67E87"/>
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect BlurRadius="4" Opacity="0.3" ShadowDepth="2"/>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="{StaticResource CriticalColor}" Opacity="0.6"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -48,21 +101,44 @@
 
         <!-- Стиль для GroupBox -->
         <Style TargetType="GroupBox">
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="10 5"/>
-            <Setter Property="Padding" Value="8"/>
-            <Setter Property="BorderBrush" Value="#FF546E7A"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background" Value="#FF455A64"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#1A2734" Offset="0"/>
+                        <GradientStop Color="#14202D" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <!-- Стиль для ComboBox -->
+        <!-- Стиль для ComboBox с черным текстом -->
         <Style TargetType="ComboBox">
             <Setter Property="Height" Value="32"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="BorderBrush" Value="#FFB0BEC5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="Background" Value="White"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter Property="Background" Value="{StaticResource AccentMilitaryBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!-- Стиль для TextBox -->
@@ -70,12 +146,16 @@
             <Setter Property="Height" Value="32"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="BorderBrush" Value="#FFB0BEC5"/>
+            <Setter Property="Background" Value="#FF1E2B35"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource TextMilitaryBrush}"/>
         </Style>
 
         <!-- Стиль для TextBlock -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
             <Setter Property="Margin" Value="0 0 0 5"/>
         </Style>
 
@@ -83,188 +163,229 @@
         <Style TargetType="CheckBox">
             <Setter Property="Margin" Value="0 10 0 5"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
+        </Style>
+
+        <!-- Стиль для DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#FF1E2B35"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
+            <Setter Property="RowBackground" Value="#FF1E2B35"/>
+            <Setter Property="AlternatingRowBackground" Value="#FF253542"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="ColumnHeaderHeight" Value="36"/>
+            <Setter Property="RowHeight" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#2D4D5C" Offset="0"/>
+                        <GradientStop Color="#1A3A4A" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="{StaticResource TextMilitaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentMilitaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0 0 0 1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="8 5"/>
         </Style>
     </Window.Resources>
 
-    <DockPanel>
-        <!-- Верхняя панель с фильтрами -->
-        <Border DockPanel.Dock="Top" 
-                Background="#FF37474F" 
-                Padding="10"
-                CornerRadius="0,0,8,8"
-                BorderThickness="0,0,0,2"
-                BorderBrush="#FF263238">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <GroupBox Header="Фильтрация">
-                    <StackPanel Orientation="Horizontal">
-                        <ComboBox ItemsSource="{Binding FilterTypes}" 
-                                  SelectedItem="{Binding SelectedFilterType}"
-                                  Width="180"/>
+    <Grid Background="{StaticResource MilitaryBackground}">
+        <!-- Затемнение для контента -->
+        <Rectangle Opacity="0.7">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Color="#00000000" Offset="0"/>
+                    <GradientStop Color="#80000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
 
-                        <StackPanel Orientation="Horizontal" 
-                                    Visibility="{Binding ShowFilterControls}">
-                            <ComboBox Width="180"
-                                      ItemsSource="{Binding Armies}" 
-                                      DisplayMemberPath="Name"
-                                      SelectedValuePath="ArmyId"
-                                      SelectedValue="{Binding SelectedArmyId}"
-                                      Visibility="{Binding IsArmyFilterSelected}"/>
-
-                            <ComboBox Width="180"
-                                      ItemsSource="{Binding Divisions}" 
-                                      DisplayMemberPath="Name"
-                                      SelectedValuePath="DivisionId"
-                                      SelectedValue="{Binding SelectedDivisionId}"
-                                      Visibility="{Binding IsDivisionFilterSelected}"/>
-
-                            <ComboBox Width="180"
-                                      ItemsSource="{Binding Corps}" 
-                                      DisplayMemberPath="Name"
-                                      SelectedValuePath="CorpsId"
-                                      SelectedValue="{Binding SelectedCorpsId}"
-                                      Visibility="{Binding IsCorpsFilterSelected}"/>
-
-                            <Button Content="Применить" 
-                                    Width="100"
-                                    Style="{StaticResource MilitaryButtonStyle}"
-                                    Command="{Binding ApplyFilterCommand}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </GroupBox>
-
-                <GroupBox Header="Анализ">
-                    <StackPanel Orientation="Horizontal">
-                        <ComboBox Width="200"
-                                  ItemsSource="{Binding Parameters}"
-                                  SelectedValue="{Binding SelectedParameter}"/>
-
-                        <Button Content="Максимальное количество частей" 
-                                Width="220"
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Command="{Binding GetMinMaxCountunitCommand}"/>
-
-                        <Button Content="Очистить" 
-                                Width="120"
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Command="{Binding ResetFiltersCommand}"/>
-                    </StackPanel>
-                </GroupBox>
-            </StackPanel>
-        </Border>
-
-        <!-- Основное содержимое -->
-        <Grid Margin="10,5,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- Левая панель - таблица данных -->
-            <Border Grid.Column="0" 
-                    Background="White" 
-                    CornerRadius="8"
-                    Padding="5"
-                    Margin="0,0,5,0"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
-                <DataGrid AutoGenerateColumns="False" 
-                          ItemsSource="{Binding MilitaryStructureItems}" 
-                          SelectedItem="{Binding SelectedItem}" 
-                          SelectionMode="Single"
-                          CanUserReorderColumns="False"
-                          CanUserResizeColumns="True"
-                          IsReadOnly="True"
-                          GridLinesVisibility="None"
-                          RowBackground="#FFF5F5F5"
-                          AlternatingRowBackground="White"
-                          BorderThickness="0"
-                          FontSize="14"
-                          HeadersVisibility="Column"
-                          ColumnHeaderHeight="32"
-                          RowHeight="32">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Army Name" Binding="{Binding ArmyName}" Width="*"/>
-                        <DataGridTextColumn Header="Division Name" Binding="{Binding DivisionName}" Width="*"/>
-                        <DataGridTextColumn Header="Corps Name" Binding="{Binding CorpsName}" Width="*"/>
-                        <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" Width="*"/>
-                        <DataGridTextColumn Header="Sub unit name" Binding="{Binding SubUnitName}" Width="*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Border>
-
-            <!-- Правая панель - управление -->
-            <Border Grid.Column="1" 
-                    Background="White" 
-                    CornerRadius="8"
+        <DockPanel>
+            <!-- Верхняя панель с фильтрами -->
+            <Border DockPanel.Dock="Top" 
                     Padding="10"
-                    BorderBrush="#FFB0BEC5"
-                    BorderThickness="1">
-                <StackPanel>
-                    <TextBlock Text="Название" FontWeight="Bold"/>
-                    <TextBox Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}"/>
+                    CornerRadius="0,0,8,8"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{StaticResource AccentMilitaryBrush}">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#1A2734" Offset="0"/>
+                        <GradientStop Color="#14202D" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-                    <TextBlock Text="Тип структуры" FontWeight="Bold" Margin="0,10,0,0"/>
-                    <ComboBox ItemsSource="{Binding StructureTypes}" 
-                              SelectedItem="{Binding SelectedStructureType}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <!-- Группа фильтрации -->
+                    <GroupBox Header="ФИЛЬТРАЦИЯ" Margin="5" Width="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox ItemsSource="{Binding FilterTypes}" 
+                                      SelectedItem="{Binding SelectedFilterType}"
+                                      Width="180"/>
 
-                    <TextBlock Text="Родительский элемент" FontWeight="Bold" Margin="0,10,0,0"/>
-                    <ComboBox ItemsSource="{Binding ParentItems}" 
-                              SelectedItem="{Binding SelectedParentItem}" 
-                              DisplayMemberPath="Name"
-                              IsEnabled="{Binding IsParentSelectionEnabled}"/>
+                            <StackPanel Orientation="Horizontal" 
+                                        Visibility="{Binding ShowFilterControls}">
+                                <ComboBox Width="180"
+                                          ItemsSource="{Binding Armies}" 
+                                          DisplayMemberPath="Name"
+                                          SelectedValuePath="ArmyId"
+                                          SelectedValue="{Binding SelectedArmyId}"
+                                          Visibility="{Binding IsArmyFilterSelected}"/>
 
-                    <CheckBox Content="Отключить автоматическое создание подразделений" 
-                              IsChecked="{Binding DisableTriggers}"
-                              Margin="0,10,0,5"/>
+                                <ComboBox Width="180"
+                                          ItemsSource="{Binding Divisions}" 
+                                          DisplayMemberPath="Name"
+                                          SelectedValuePath="DivisionId"
+                                          SelectedValue="{Binding SelectedDivisionId}"
+                                          Visibility="{Binding IsDivisionFilterSelected}"/>
 
-                    <!-- Упорядоченные кнопки в две колонки -->
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                                <ComboBox Width="180"
+                                          ItemsSource="{Binding Corps}" 
+                                          DisplayMemberPath="Name"
+                                          SelectedValuePath="CorpsId"
+                                          SelectedValue="{Binding SelectedCorpsId}"
+                                          Visibility="{Binding IsCorpsFilterSelected}"/>
 
-                        <Button Command="{Binding AddItemCommand}" 
-                                Content="Добавить" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="0" Grid.Row="0"/>
-                        <Button Command="{Binding DeleteItemCommand}" 
-                                Content="Удалить" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="1" Grid.Row="0"/>
-                        <Button Command="{Binding UpdateItemCommand}" 
-                                Content="Изменить" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="0" Grid.Row="1"/>
-                        <Button Command="{Binding OpenPersonnelWindowCommand}" 
-                                Content="Личный состав" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="1" Grid.Row="1"/>
-                        <Button Command="{Binding OpenEquipmentWindowCommand}" 
-                                Content="Техника" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="0" Grid.Row="2"/>
-                        <Button Command="{Binding OpenWeaponWindowCommand}" 
-                                Content="Вооружение" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="1" Grid.Row="2"/>
-                        <Button Command="{Binding OpenInfrastructureWindowCommand}" 
-                                Content="Инфраструктура" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="0" Grid.Row="3"/>
-                        <Button Command="{Binding OpenMainPage}" 
-                                Content="Главная" 
-                                Style="{StaticResource MilitaryButtonStyle}"
-                                Grid.Column="1" Grid.Row="3"/>
-                    </Grid>
+                                <Button Content="ПРИМЕНИТЬ" 
+                                        Width="100"
+                                        Style="{StaticResource MilitaryButtonStyle}"
+                                        Command="{Binding ApplyFilterCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Группа анализа -->
+                    <GroupBox Header="АНАЛИЗ" Margin="5" Width="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Width="200"
+                                      ItemsSource="{Binding Parameters}"
+                                      SelectedValue="{Binding SelectedParameter}"/>
+
+                            <Button Content="МАКСИМАЛЬНОЕ КОЛИЧЕСТВО ЧАСТЕЙ" 
+                                    Width="220"
+                                    Style="{StaticResource MilitaryButtonStyle}"
+                                    Command="{Binding GetMinMaxCountunitCommand}"/>
+
+                            <Button Content="ОЧИСТИТЬ" 
+                                    Width="120"
+                                    Style="{StaticResource MilitaryButtonStyle}"
+                                    Command="{Binding ResetFiltersCommand}"/>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </Border>
-        </Grid>
-    </DockPanel>
+
+            <!-- Основная рабочая область -->
+            <Grid Margin="10,5,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Таблица данных -->
+                <Border Grid.Column="0" 
+                        Margin="0,0,5,0"
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource AccentMilitaryBrush}"
+                        BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#301E2B35" Offset="0"/>
+                            <GradientStop Color="#401A2734" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <DataGrid AutoGenerateColumns="False" 
+                              ItemsSource="{Binding MilitaryStructureItems}" 
+                              SelectedItem="{Binding SelectedItem}" 
+                              SelectionMode="Single"
+                              CanUserReorderColumns="False"
+                              CanUserResizeColumns="True"
+                              IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="АРМИЯ" Binding="{Binding ArmyName}" Width="*"/>
+                            <DataGridTextColumn Header="ДИВИЗИЯ" Binding="{Binding DivisionName}" Width="*"/>
+                            <DataGridTextColumn Header="КОРПУС" Binding="{Binding CorpsName}" Width="*"/>
+                            <DataGridTextColumn Header="ЧАСТЬ" Binding="{Binding UnitName}" Width="*"/>
+                            <DataGridTextColumn Header="ПОДРАЗДЕЛЕНИЕ ЧАСТИ" Binding="{Binding SubUnitName}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <!-- Панель управления -->
+                <Border Grid.Column="1" 
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource AccentMilitaryBrush}"
+                        BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#301E2B35" Offset="0"/>
+                            <GradientStop Color="#401A2734" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <StackPanel Margin="10">
+                        <!-- Заголовок панели -->
+                        <Border CornerRadius="4" 
+                                Background="#402D4D5C" 
+                                Padding="8" 
+                                Margin="0,0,0,10">
+                            <TextBlock Text="УПРАВЛЕНИЕ СТРУКТУРОЙ" 
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource AccentMilitaryBrush}"/>
+                        </Border>
+
+                        <!-- Поля ввода -->
+                        <TextBlock Text="НАЗВАНИЕ:" FontWeight="Bold"/>
+                        <TextBox Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <TextBlock Text="ТИП СТРУКТУРЫ:" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <ComboBox ItemsSource="{Binding StructureTypes}" 
+                                  SelectedItem="{Binding SelectedStructureType}"/>
+
+                        <TextBlock Text="РОДИТЕЛЬСКИЙ ЭЛЕМЕНТ:" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <ComboBox ItemsSource="{Binding ParentItems}" 
+                                  SelectedItem="{Binding SelectedParentItem}" 
+                                  DisplayMemberPath="Name"
+                                  IsEnabled="{Binding IsParentSelectionEnabled}"/>
+
+                        <CheckBox Content="ОТКЛЮЧИТЬ АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ПОДРАЗДЕЛЕНИЙ" 
+                                  IsChecked="{Binding DisableTriggers}"
+                                  Margin="0,15,0,15"/>
+
+                       
+                        <UniformGrid Columns="2" Margin="0,5,0,0">
+                            <Button Command="{Binding AddItemCommand}" 
+                                    Content="ДОБАВИТЬ"
+                                    Style="{StaticResource MilitaryButtonStyle}"
+                                    Margin="3"/>
+
+                            <Button Command="{Binding DeleteItemCommand}" 
+                                    Content="УДАЛИТЬ"
+                                    Style="{StaticResource MilitaryCriticalButtonStyle}"
+                                    Margin="3"/>
+
+                            <Button Command="{Binding UpdateItemCommand}" 
+                                    Content="РЕДАКТИРОВАТЬ"
+                                    Style="{StaticResource MilitaryButtonStyle}"
+                                    Margin="3"/>
+
+                            <Button Command="{Binding OpenMainPage}" 
+                                    Content="ГЛАВНАЯ"
+                                    Style="{StaticResource MilitaryButtonStyle}"
+                                    Margin="3"/>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </DockPanel>
+    </Grid>
 </Window>
